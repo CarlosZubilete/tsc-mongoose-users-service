@@ -1,0 +1,67 @@
+@startuml
+
+
+<style>
+participant {
+  padding: 20px;
+  maxMessageSize: 200px
+}
+</style>
+
+title Global Error Handling Flow
+
+autonumber
+
+actor "Client" as client
+
+box "Express Application Pipeline" #FFF0F5
+participant " Router " as router
+participant " SchemaValidation \n(Zod)" as validate
+participant " CatchAsync \n(Wrapper)" as catch
+participant " Controller / Service " as logic
+participant " GlobalErrorHandler\n(Middleware) " as errorHandler
+end box
+
+client -> router : Request
+
+== Scenario A: Bad Input Data ==
+router -> validate : Check schema (Zod)
+
+note right of validate
+  Detects missing or invalid fields
+end note
+
+validate -[#red]> errorHandler : next(ZodError)
+
+== Scenario B: Internal or Logic Error ==
+router -> catch : Request passes validation
+catch -> logic : Execute logic
+
+note right of logic
+  An Error occurs here:
+  - Database is down
+  - Document not found
+  - Business Conflict
+end note
+
+logic -[#red]> catch : throws Error
+
+note right of catch
+  CatchAsync intercepts the thrown error.
+  Without this, the server could crash.
+  It automatically delegates it.
+end note
+catch -[#red]> errorHandler : next(Error)
+
+== The Unified Response ==
+note over errorHandler
+  The Global Error Handler formats
+  ALL errors (Zod, AppError, MongoError)
+  into a single, consistent JSON structure.
+end note
+
+errorHandler -[#red]> client : Response (JSON Error Message)
+
+footer github.com/CarlosZubilete | July 2026
+
+@enduml

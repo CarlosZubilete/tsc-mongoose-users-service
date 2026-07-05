@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "baseUrl": "./src",
+    "paths": {
+      "@errors/*": ["modules/errors/*"],
+      "@controllers/*": ["modules/controllers/*"],
+      "@services/*": ["modules/service/*"],
+      "@repositories/*": ["modules/repositories/*"],
+      "@models/*": ["modules/models/*"],
+      "@schemas/*": ["modules/schemas/*"],
+      "@routes/*": ["modules/routes/*"],
+      "@utils/*": ["modules/utils/*"],
+      // Singular name
+      "@database/*": ["modules/database/*"],
+      // 
+      "@source/*": ["source/*"],
+      "@config/*": ["config/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
+}

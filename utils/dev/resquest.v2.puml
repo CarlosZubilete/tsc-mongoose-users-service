@@ -1,0 +1,46 @@
+@startuml
+skinparam maxMessageSize 150
+
+actor Client as client
+box "Express Pipeline" #LightCyan
+    participant "Routes\n(Router)" as router
+    participant "ValidateSchema\n(Middleware)" as validate
+    participant "CatchAsync\n(Wrapper)" as catch
+    participant "Controller" as controller
+    participant "Service\n(Business Logic)" as service
+    participant "Repository\n(Data Access)" as repo
+    participant "GlobalErrorHandler\n(Middleware)" as errorHandler
+end box
+database "MongoDB" as db
+
+== Normal Request Flow (Happy Path) ==
+
+client -> router : Request (e.g., POST /users)
+router -> validate : Validate Input (Zod)
+
+alt Invalid Schema
+    validate -[#red]> errorHandler : next(error)
+else Valid Schema
+    validate -> catch : next()
+    catch -> controller : execute logic
+    
+    controller -> service : process data
+    service -> repo : query/mutate
+    repo -> db : mongoose operations
+    
+    db --> repo : Document
+    repo --> service : Entity/DTO
+    service --> controller : DTO
+    
+    controller --> client : Response 200/201 OK
+end
+
+== Error Handling Flow ==
+
+Note over controller, repo: If any error occurs here (e.g., Database down, AppError thrown)
+service -[#red]> controller : throws Exception
+controller -[#red]> catch : Exception caught
+catch -[#red]> errorHandler : next(error)
+errorHandler -[#red]> client : Response 400/500 Error JSON
+
+@enduml

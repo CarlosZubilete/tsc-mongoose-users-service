@@ -1,0 +1,54 @@
+@startuml skinparam componentStyle uml2
+
+actor Client
+
+package "Express Application" {
+    
+    package "Routes Layer" {
+        [UserRouter] as router
+    }
+    
+    package "Middlewares" {
+        [GlobalErrorHandler] as errorHandler
+        [ZodValidation] as validator
+        [CatchAsync] as catchAsync
+    }
+    
+    package "Controllers Layer" {
+        [UserController] as controller
+    }
+    
+    package "Services Layer" {
+        [UserService] as service
+    }
+    
+    package "Repositories Layer" {
+        [UserRepository] as repository
+    }
+    
+    package "Models (Domain)" {
+        [User Mongoose Schema] as model
+    }
+}
+
+database "MongoDB" as db
+
+Client --> router : HTTP Request
+router --> validator : 1. Validate Input
+validator --> catchAsync : 2. Next()
+catchAsync --> controller : 3. Route Handler
+controller --> service : 4. DTO / Parsed Data
+service --> repository : 5. Business Logic
+repository --> model : 6. Data Access
+model --> db : 7. Query/Mutation
+
+note right of catchAsync
+  Captures exceptions
+  and redirects them to
+  GlobalErrorHandler
+end note
+
+catchAsync -.-> errorHandler : throws Exception
+errorHandler -.-> Client : Formatted JSON ErrorResponse
+
+@enduml

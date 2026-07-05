@@ -1,0 +1,45 @@
+@startuml
+
+actor Client
+
+[ServerMain] 
+
+[RouteMain]
+
+[ValidateSchema]
+
+[GlobalErrorHandler] 
+
+[CatchAsync] 
+
+[Routes]
+
+[Controllers]
+
+database "Database" 
+
+Client --> RouteMain : Request
+
+RouteMain .. ServerMain : find >   
+
+ServerMain .. RouteMain : address >
+
+GlobalErrorHandler ..> ServerMain : registered
+
+RouteMain --> Routes : Request
+
+Routes <.. ValidateSchema : use
+
+Controllers ..> CatchAsync : use
+
+Routes --> Controllers : ok
+
+ValidateSchema --> GlobalErrorHandler: Error
+
+CatchAsync --> GlobalErrorHandler : Error
+
+GlobalErrorHandler --> Client: Reponse
+
+Controllers --> Database: ok
+
+@enduml

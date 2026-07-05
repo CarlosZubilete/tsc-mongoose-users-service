@@ -1,0 +1,46 @@
+@startuml
+
+<style>
+participant {
+    padding: 20px;
+    maxMessageSize: 150px;
+}
+</style>
+
+title Normal Request Flow
+autonumber
+
+actor "Client" as client
+
+box "Express Application Pipeline" #E6F3FF
+participant " Router " as router
+participant " SchemaValidation \n(Zod)" as validate
+participant " Controller \n" as controller
+participant " Service \n (Business Logic) " as service
+participant " Repository \n (Data Access) " as repo
+participant " Mapper \n (DTO Pattern )" as mapper
+end box
+
+database "MongoDB" as db
+
+client -> router : Request
+router -> validate : Validate (req.body / params)
+
+validate -> controller : Input is valid\n next()
+controller -> service : Input is valid
+
+service -> repo : Input is valid
+repo -> db : Mongoose query
+
+note right of repo: Repository uses the Mapper\nto hide sensitive data\nbefore returning it.
+
+mapper --> repo : Mapper (Clean data)
+
+repo --> service : JSON
+service --> controller : JSON
+
+controller --> client : Response\n (JSON)
+
+footer github.com/CarlosZubilete | July 2026
+
+@enduml

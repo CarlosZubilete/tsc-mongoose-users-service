@@ -1,0 +1,21 @@
+version: '3.8'
+
+services: 
+  mongo: 
+    container_name: tsc_mongoose_users_service
+    image: mongo:6.0.27-jammy
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    ports: 
+      - "27017:27017"
+    volumes:
+      - tsc_mongoose_users_service_data:/data/db
+      - tsc_mongoose_users_service_config:/data/configdb
+
+volumes:
+  tsc_mongoose_users_service_data:
+    external: true
+  tsc_mongoose_users_service_config:
+    external: true
+  
