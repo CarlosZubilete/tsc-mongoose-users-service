@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.npm/
+
+# Build output
+build/
+dist/
+out/
+coverage/
+.tmp/
+tmp/
+temp/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Docker local overrides
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Misc
+*.pid
+*.seed
