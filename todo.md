@@ -1,4 +1,4 @@
-1. Implement a delete user (logic delete)
+1. Implement a delete user. 
 2. Create a map with plant uml : how the flow data is
 3. Create a DER about the project.
 4. Create a professional README.md

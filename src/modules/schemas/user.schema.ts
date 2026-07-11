@@ -30,9 +30,4 @@ const UpdateUserSchema = z.object({
     email: z.string().email("Invalid email address").max(100).optional(),
 });
 
-// type CreateUser = z.infer<typeof CreateUserSchema>;
-// type UpdateUser = z.infer<typeof UpdateUserSchema>;
-
-// export { CreateUser, UpdateUser };
-
 export { CreateUserSchema, UpdateUserSchema };

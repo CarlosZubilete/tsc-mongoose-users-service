@@ -13,8 +13,16 @@ app.use(morgan("dev")); // Log HTTP requests to the console
 
 app.use("/api/v1", router); // Use the router for all routes starting with /api/v1
 
+// 404 Handler:
+// todo: add more details about uri.
+app.use(function (_, res) {
+    res.status(404).json({
+        status: "success",
+        message: "Sorry, your request has not been processed successfully.",
+    });
+});
+
 // Global Error Handler. It always has to be at the end.
 app.use(GlobalErrorHandler);
-
 
 export default app;

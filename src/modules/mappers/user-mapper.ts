@@ -14,7 +14,7 @@ export class UserMapper {
     public static toDTOList(entities: User[]): UserResponse[] {
         return entities
             .map((entity) => this.toDTO(entity))
-            .filter((user) => user !== null) as UserResponse[];
+            .filter((user) => user !== null); // as UserResponse[];
     }
 
     // todo: mapper entity -> toDTO (hash, password)

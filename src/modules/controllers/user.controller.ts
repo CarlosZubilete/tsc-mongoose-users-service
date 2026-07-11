@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { IUserService } from "modules/services/user.service";
-import { UserResponse } from "@models/user.model";
+import { UserCreate, UserResponse, UserUpdate } from "@models/user.model";
 import { NotFoundError } from "@errors/not-found-error";
 import { ConflictError } from "@errors/conflict-error";
 
@@ -12,7 +12,7 @@ export class UserController {
     }
 
     public getList = async (_: Request, res: Response) => {
-        const users: UserResponse[] = await this.service.findUsers();
+        const users = await this.service.findUsers();
         res.status(200).json(users);
     };
 
@@ -20,46 +20,39 @@ export class UserController {
         const id = req.params.id as string;
         const user = await this.service.findUserById(id);
 
-        if (!user) throw new NotFoundError(`User with id: ${id} not found.`);
+        if (!user)
+            throw new NotFoundError(`User with this id: ${id} not found.`);
 
         res.status(200).json(user);
     };
 
     public create = async (req: Request, res: Response) => {
         // Validations: Business Logic
-        // if (await this.service.existsUserByName(req.body.name))
-        //     throw new ConflictError(
-        //         `User whit name: ${req.body.name} already exits.`,
-        //     );
-
-        // if (await this.service.existsUserByUserName(req.body.username))
-        //     throw new ConflictError(
-        //         `User whit username: ${req.body.username} already exits.`,
-        //     );
-
-        // if (await this.service.existsUserByEmail(req.body.email))
-        //     throw new ConflictError(
-        //         `User whit email: ${req.body.email} already exits.`,
-        //     );
-
-        /** */
-        if (await this.service.existsUserByName(req.body.name))
+        const name = req.body.name as string;
+        if (await this.service.existsUserByName(name))
             throw new ConflictError(
-                `User whit name: ${req.body.name} already exits.`,
+                `User whit this name: ${name} already exits.`,
             );
 
-        if (await this.service.existsUserByUserName(req.body.username))
+        const username = req.body.username as string;
+        if (await this.service.existsUserByUserName(username))
             throw new ConflictError(
-                `User whit username: ${req.body.username} already exits.`,
+                `User whit this username: ${username} already exits.`,
             );
 
-        if (await this.service.existsUserByEmail(req.body.email))
+        const email = req.body.email as string;
+        if (await this.service.existsUserByEmail(email))
             throw new ConflictError(
-                `User whit email: ${req.body.email} already exits.`,
+                `User this whit email: ${email} already exits.`,
             );
-        const newUser = await this.service.createUser(req.body);
 
-        res.status(201).json(newUser as UserResponse); // todo: It's send the whole user.
+        const newUser = req.body as UserCreate;
+
+        const created = await this.service.createUser(newUser);
+
+        // TODO: verify "created !== null"
+
+        res.status(201).json(created);
     };
 
     public update = async (req: Request, res: Response) => {
@@ -87,16 +80,18 @@ export class UserController {
             const newEmail: string = req.body.email;
             if (await this.service.existsUserByEmail(newEmail))
                 throw new ConflictError(
-                    `this email: ${newEmail} already exists.`,
+                    `This email: ${newEmail} already exists.`,
                 );
         }
 
         if (!this.service.existsUserById(id))
-            throw new NotFoundError(`User with id: ${id} not found.`);
+            throw new NotFoundError(`User with this id: ${id} not found.`);
 
-        const updated = await this.service.updateUser(id, req.body);
+        const partialUser = req.body as UserUpdate;
 
-        if (!updated) throw new NotFoundError(`User with id: ${id} not found.`);
+        const updated = await this.service.updateUser(id, partialUser);
+
+        // TODO: verify "updated !== null"
 
         res.status(200).json(updated);
     };
@@ -104,87 +99,10 @@ export class UserController {
     public deleteById = async (req: Request, res: Response) => {
         const id = req.params.id as string;
 
-        const deleted = this.service.deleteUser(id);
+        const deleted = await this.service.deleteUser(id);
 
         if (!deleted) throw new NotFoundError(`User with id: ${id} not found.`);
 
-        res.status(204).json({ message: "User deleted success." });
+        res.status(204).end();
     };
 }
-
-/*
-const userRepository: IUserRepository = new UserRepository();
-const userService: IUserService = new UserService(userRepository);
-
-const getUserList = async (_: Request, res: Response, next: NextFunction) => {
-    try {
-        const users: UserResponse[] = await userService.findUsers();
-
-        res.status(200).json(users);
-    } catch (err) {
-        next(err);
-    }
-};
-
-const getUserById = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const id = req.params.id as string;
-        const user = await userService.findUserById(id);
-
-        if (!user) throw new NotFoundError("User with id: ${id} not found.");
-
-        res.status(200).json(user);
-    } catch (e) {
-        console.log("Error in controller user: >> ", e);
-        res.status(500).json(e);
-    }
-};
-
-const createUser = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const data = CreateUserSchema.parse(req.body);
-
-        const newUser = await userService.createUser(data);
-
-        res.status(201).json(newUser);
-    } catch (err) {
-        next(err);
-    }
-};
-
-const updateUser = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const data = UpdateUserSchema.parse(req.body);
-
-        const id = req.params.id as string;
-
-        if (!userService.existsUser(id))
-            throw new NotFoundError("User with id: ${id} not found.");
-
-        const updated = await userService.updateUser(id, data as UserUpdate);
-
-        // What 's happen here ?
-        if (!updated) throw new NotFoundError("User with id: ${id} not found.");
-
-        res.status(200).json(updated);
-    } catch (err) {
-        next(err);
-    }
-};
-
-const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const id = req.params.id as string;
-
-        const deleted = userService.deleteUser(id);
-
-        if (!deleted) throw new NotFoundError("User with id: ${id} not found.");
-
-        res.status(204).json({ message: "User deleted success." });
-    } catch (err) {
-        next(err);
-    }
-};
-
-export { getUserList, getUserById, createUser, updateUser, deleteUser };
-*/

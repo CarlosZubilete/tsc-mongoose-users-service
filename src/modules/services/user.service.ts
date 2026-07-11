@@ -4,8 +4,11 @@ import { IUserRepository } from "@repositories/user.repository";
 interface IUserService {
     findUsers(): Promise<UserResponse[]>;
     findUserById(id: string): Promise<UserResponse | null>;
-    createUser(data: UserCreate): Promise<UserResponse | null>;
-    updateUser(id: string, data: UserUpdate): Promise<UserResponse | null>;
+    createUser(newUser: UserCreate): Promise<UserResponse | null>;
+    updateUser(
+        id: string,
+        partialUser: UserUpdate,
+    ): Promise<UserResponse | null>;
     deleteUser(id: string): Promise<Boolean>;
     // custom
     existsUserById(id: string): Promise<Boolean>;
@@ -29,15 +32,15 @@ class UserService implements IUserService {
         return this.repository.findById(id);
     }
 
-    async createUser(data: UserCreate): Promise<UserResponse | null> {
-        return this.repository.create(data);
+    async createUser(newUser: UserCreate): Promise<UserResponse | null> {
+        return this.repository.create(newUser);
     }
 
     async updateUser(
         id: string,
-        data: Partial<User>,
+        partialUser: UserUpdate,
     ): Promise<UserResponse | null> {
-        return this.repository.update(id, data);
+        return this.repository.update(id, partialUser);
     }
 
     async deleteUser(id: string): Promise<Boolean> {
@@ -62,17 +65,3 @@ class UserService implements IUserService {
 }
 
 export { IUserService, UserService };
-
-/*
-    async existsUserByName(name: string): Promise<Boolean> {
-        return this.repository.existsByName(name);
-    }
-
-    async existsUserByUserName(username: string): Promise<Boolean> {
-        return this.repository.existsByUserName(username);
-    }
-
-    async existsUserByEmail(email: string): Promise<Boolean> {
-        return this.repository.existsByEmail(email);
-    }
-*/

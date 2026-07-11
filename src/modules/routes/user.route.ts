@@ -6,7 +6,7 @@ import { CatchAsync } from "@utils/catch-async.utils";
 import { ValidateSchema } from "modules/middlewares/validate-schema.middleware";
 import { CreateUserSchema, UpdateUserSchema } from "@schemas/user.schema";
 
-// Initialization :
+// Dependency injection 
 const userRepository: IUserRepository = new UserRepository();
 const userService: IUserService = new UserService(userRepository);
 const userController = new UserController(userService);
