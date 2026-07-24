@@ -1,51 +1,51 @@
-import { UserCreate, UserUpdate, UserResponse, User } from "@models/user.model";
+import { User, UserCreate, UserUpdate } from "@models/user.model";
 import { UserCollection } from "modules/database/user.collection";
-import { UserMapper } from "modules/mappers/user-mapper";
 
 // key:value
 type Filter = Record<string, unknown>;
 
 interface IUserRepository {
-    findAll(): Promise<UserResponse[]>;
-    findById(id: string): Promise<UserResponse | null>;
-    create(data: UserCreate): Promise<UserResponse | null>;
-    update(id: string, data: UserUpdate): Promise<UserResponse | null>;
-    delete(id: string): Promise<Boolean>;
+    findAll(): Promise<User[]>;
+    findById(id: string): Promise<User | null>;
+    create(newUser: UserCreate): Promise<User>;
+    update(id: string, partialUser: UserUpdate): Promise<User | null>;
+    delete(id: string): Promise<boolean>;
     // Custom queries
-    existsBy(filed: Filter): Promise<Boolean>;
+    findOne(field: Filter): Promise<User | null>;
+    existsBy(field: Filter): Promise<boolean>;
 }
 
 class UserRepository implements IUserRepository {
-    async findAll(): Promise<UserResponse[]> {
-        const users = await UserCollection.find();
-        return UserMapper.toDTOList(users);
+    async findAll(): Promise<User[]> {
+        return await UserCollection.find();
     }
 
-    async findById(id: string): Promise<UserResponse | null> {
-        const user = await UserCollection.findById(id).exec();
-        return user ? UserMapper.toDTO(user) : null;
+    async findById(id: string): Promise<User | null> {
+        return await UserCollection.findById(id).exec();
     }
 
-    async create(data: UserCreate): Promise<UserResponse | null> {
-        const newUser = new UserCollection(data);
-        await newUser.save();
-        return UserMapper.toDTO(newUser);
+    async create(newUser: UserCreate): Promise<User> {
+        const created = new UserCollection(newUser);
+        return await created.save();
     }
 
-    async update(id: string, data: UserUpdate): Promise<UserResponse | null> {
-        const updated = await UserCollection.findByIdAndUpdate(id, data, {
+    async update(id: string, user: Partial<User>): Promise<User | null> {
+        return await UserCollection.findByIdAndUpdate(id, user, {
             new: true,
         }).exec();
-        return updated ? UserMapper.toDTO(updated) : null;
     }
 
-    async delete(id: string): Promise<Boolean> {
+    async delete(id: string): Promise<boolean> {
         const result = await UserCollection.findByIdAndDelete(id).exec();
         return result !== null;
     }
 
+    async findOne(field: Filter): Promise<User | null> {
+        return await UserCollection.findOne(field).exec();
+    }
+
     // Custom queries:
-    async existsBy(field: Filter): Promise<Boolean> {
+    async existsBy(field: Filter): Promise<boolean> {
         const exists = await UserCollection.exists(field).exec();
         return exists ? true : false;
     }

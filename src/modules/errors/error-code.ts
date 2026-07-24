@@ -6,11 +6,12 @@ export enum ErrorCode {
 
     // 4xx
     BAD_REQUEST = 400,
-    // UNAUTHORIZED = 401,
+    UNAUTHORIZED = 401,
     FORBIDDEN = 403,
     NOT_FOUND = 404,
     CONFLICT = 409,
     UNPROCESSABLE_CONTENT = 422,
+    INVALID_TOKEN = 498,
     // 5xx
     INTERNAL_SERVER_ERROR = 500,
 }

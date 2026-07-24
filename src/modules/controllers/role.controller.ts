@@ -1,6 +1,6 @@
 import { ConflictError } from "@errors/conflict-error";
 import { NotFoundError } from "@errors/not-found-error";
-import { RoleCreate, RoleResponse, RoleUpdate } from "@models/role.model";
+import { RoleCreate, RoleUpdate } from "@models/role.model";
 import { Request, Response } from "express";
 import { IRoleService } from "modules/services/roles.service";
 

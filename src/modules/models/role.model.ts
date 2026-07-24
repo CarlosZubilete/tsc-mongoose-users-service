@@ -1,5 +1,7 @@
+import { Document } from "mongoose";
+
 // Model
-interface Role {
+interface Role extends Document {
     id: string;
     name: string;
 }

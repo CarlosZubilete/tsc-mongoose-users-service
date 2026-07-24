@@ -1,5 +1,6 @@
 import { RoleCreate, RoleUpdate, RoleResponse } from "@models/role.model";
 import { IRoleRepository } from "@repositories/role.repository";
+import { RoleMapper } from "modules/mappers/role.mapper";
 
 interface IRoleService {
     findRoles(): Promise<RoleResponse[]>;
@@ -9,10 +10,10 @@ interface IRoleService {
         id: string,
         partialRole: RoleUpdate,
     ): Promise<RoleResponse | null>;
-    deleteRole(id: string): Promise<Boolean>;
+    deleteRole(id: string): Promise<boolean>;
     // custom queries
-    existsRoleById(id: string): Promise<Boolean>;
-    existsRoleByName(name: string): Promise<Boolean>;
+    existsRoleById(id: string): Promise<boolean>;
+    existsRoleByName(name: string): Promise<boolean>;
 }
 
 class RoleService implements IRoleService {
@@ -23,33 +24,37 @@ class RoleService implements IRoleService {
     }
 
     async findRoles(): Promise<RoleResponse[]> {
-        return this.repository.findAll();
+        const roles = await this.repository.findAll();
+        return RoleMapper.toDTOList(roles);
     }
 
     async findRoleById(id: string): Promise<RoleResponse | null> {
-        return this.repository.findById(id);
+        const existingRole = await this.repository.findById(id);
+        return existingRole ? RoleMapper.toDTO(existingRole) : null;
     }
 
     async createRole(newRole: RoleCreate): Promise<RoleResponse | null> {
-        return this.repository.create(newRole);
+        const roleCreated = await this.repository.create(newRole);
+        return roleCreated ? RoleMapper.toDTO(roleCreated) : null;
     }
 
     async updateRole(
         id: string,
         partialRole: RoleUpdate,
     ): Promise<RoleResponse | null> {
-        return this.repository.update(id, partialRole);
+        const roleUpdated = await this.repository.update(id, partialRole);
+        return roleUpdated ? RoleMapper.toDTO(roleUpdated) : null;
     }
 
-    async deleteRole(id: string): Promise<Boolean> {
-        return this.repository.delete(id);
+    async deleteRole(id: string): Promise<boolean> {
+        return await this.repository.delete(id);
     }
 
     // Custom queries
-    async existsRoleById(id: string): Promise<Boolean> {
+    async existsRoleById(id: string): Promise<boolean> {
         return this.repository.existsBy({ _id: id });
     }
-    async existsRoleByName(name: string): Promise<Boolean> {
+    async existsRoleByName(name: string): Promise<boolean> {
         return this.repository.existsBy({ name: name });
     }
 }
