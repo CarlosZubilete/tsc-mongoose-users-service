@@ -6,9 +6,9 @@ const Post: Schema = new Schema<Post>(
         name: { type: String, required: true, trim: true },
         description: { type: String, required: true, trim: true },
         userId: {
+            ref: "users",
             type: mongoose.Types.ObjectId,
             required: true,
-            ref: "users",
         },
     },
     {

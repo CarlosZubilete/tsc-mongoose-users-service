@@ -2,7 +2,7 @@ import { ConflictError } from "@errors/conflict-error";
 import { NotFoundError } from "@errors/not-found-error";
 import { RoleCreate, RoleUpdate } from "@models/role.model";
 import { Request, Response } from "express";
-import { IRoleService } from "modules/services/roles.service";
+import { IRoleService } from "modules/services/role.service";
 
 export class RoleController {
     private service: IRoleService;
@@ -34,10 +34,14 @@ export class RoleController {
                 `Role with this name: ${name} already exists.`,
             );
 
+        // Verify the permissions are not repeat
+        const permissions = req.body.permissions as string[];
+        const unique_permissions = [...new Set(permissions)];
+        req.body.permissions = unique_permissions;
+
         const role = req.body as RoleCreate;
         const created = await this.service.createRole(role);
 
-        // TODO: verify "created !== null"
 
         res.status(201).json(created);
     };
@@ -54,6 +58,12 @@ export class RoleController {
                 throw new ConflictError(
                     `Role with this name: ${name} already exists.`,
                 );
+        }
+
+        if (req.body.permissions != null) {
+            const permissions = req.body.permissions as string[];
+            const unique_permissions = [...new Set(permissions)];
+            req.body.permissions = unique_permissions;
         }
 
         const partialRole = req.body as RoleUpdate;

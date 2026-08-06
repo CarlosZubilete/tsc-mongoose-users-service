@@ -73,7 +73,7 @@ class UserService implements IUserService {
 
     // Custom queries
     async isValidUser(authLogin: AuthLogin): Promise<boolean> {
-        const existingUser = await this.repository.findOne({
+        const existingUser = await this.repository.findBy({
             email: authLogin.email,
         });
 
@@ -90,10 +90,10 @@ class UserService implements IUserService {
     }
 
     async findUserByEmail(email: string): Promise<UserResponse | null> {
-        const existUser = await this.repository.findOne({ email: email });
-        return existUser ? UserMapper.toDTO(existUser) : null;
+        const existsUser = await this.repository.findBy({ email: email });
+        return existsUser ? UserMapper.toDTO(existsUser) : null;
     }
-
+    
     async existsUserById(id: string): Promise<boolean> {
         return this.repository.existsBy({ _id: id });
     }

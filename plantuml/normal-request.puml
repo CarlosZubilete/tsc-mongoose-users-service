@@ -1,5 +1,9 @@
 @startuml
 
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
 <style>
 participant {
     padding: 20px;
@@ -12,7 +16,7 @@ autonumber
 
 actor "Client" as client
 
-box "Express Application Pipeline" #E6F3FF
+box #E6F3FF
 participant " Router " as router
 participant " SchemaValidation \n(Zod)" as validate
 participant " Controller \n" as controller
@@ -32,7 +36,7 @@ controller -> service : Input is valid
 service -> repo : Input is valid
 repo -> db : Mongoose query
 
-note right of repo: Repository uses the Mapper\nto hide sensitive data\nbefore returning it.
+note right of service: Service uses the Mapper\nto hide sensitive data\nbefore returning it.
 
 mapper --> repo : Mapper (Clean data)
 
@@ -41,6 +45,6 @@ service --> controller : JSON
 
 controller --> client : Response\n (JSON)
 
-footer github.com/CarlosZubilete | July 2026
+footer github.com/CarlosZubilete | Created: July 2026 | Updated: August 2026
 
 @enduml

@@ -1,0 +1,101 @@
+@startuml
+
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+title Users Service: Domain Models
+
+
+' Professional colors
+skinparam class {
+  BackgroundColor<<Response>> #E1F5FE
+  BorderColor<<Response>> #01579B
+  BackgroundColor<<Entity>> #FFF3E0
+  BorderColor<<Entity>> #E65100
+}
+
+package "Model Response (DTOs)" {
+  Interface UserResponse <<Response>> {
+    + id: string
+    + username: string
+    + email: string
+    + roles: string[]
+  }
+
+  Interface RoleResponse <<Response>> {
+    + id: string
+    + name: string
+    + permissions: string[]
+    + level: number
+  }
+
+  Interface AuthResponse <<Response>> {
+    + token: string
+  }
+
+  Interface PostResponse <<Response>> {
+    + id: string
+    + name: string
+    + description: string
+  }
+}
+
+
+
+class User <<Entity>> {
+  - _id: ObjectId
+  - name: string
+  - username: string
+  - email: string
+  - password: string
+  - roles: [ObjectId] (Ref: Role)
+}
+
+class Role <<Entity>> {
+  - _id: ObjectId
+  - name: string
+  - permissions: string[]
+  - level: number
+}
+
+class Authentication <<Entity>> {
+  - _id: ObjectId
+  - sub: ObjectId (Ref: User)
+  - token: string
+  - isValid: boolean
+  - createdAt: Date (TTL: 2 hours)
+}
+
+class Post <<Entity>> {
+  - _id: ObjectId
+  - name: string
+  - description: string
+  - userId: ObjectId (Ref: User)
+}
+
+
+' DTO Mappings
+UserResponse  <..  User : "maps to"
+RoleResponse  <..  Role : "maps to"
+AuthResponse  <..  Authentication : "maps to"
+PostResponse  <..  Post : "maps to"
+
+
+' Relationships
+User --> Role : "has"
+User  -->  Post : "belongs"
+User  -->  Authentication : "creates a session"
+
+'Note
+note left of AuthResponse #LemonChiffon
+  Token contains user information:
+  - sub (userId)
+  - username
+  - email
+  - roles
+end note
+
+footer github.com/CarlosZubilete | August 2026
+
+@enduml

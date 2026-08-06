@@ -12,6 +12,10 @@ coverage/
 tmp/
 temp/
 
+# Lock files
+pnpm-lock.yaml
+
+
 # TypeScript
 *.tsbuildinfo
 

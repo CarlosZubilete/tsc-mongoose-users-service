@@ -1,5 +1,5 @@
 // This file contains the logic about our server
-
+import { API_NAME, API_VERSION } from "@config/env";
 import express, { Application } from "express";
 import { GlobalErrorHandler } from "modules/middlewares/global-error-handler.middleware";
 import morgan from "morgan";
@@ -11,7 +11,7 @@ const app: Application = express();
 app.use(express.json()); // Parse incoming JSON requests
 app.use(morgan("dev")); // Log HTTP requests to the console
 
-app.use("/api/v1", router); // Use the router for all routes starting with /api/v1
+app.use(`/${API_NAME}/${API_VERSION}`, router); // Use the router for all routes starting with /api/v1
 
 // 404 Handler:
 // todo: add more details about uri.

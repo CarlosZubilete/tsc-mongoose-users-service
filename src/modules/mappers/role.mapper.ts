@@ -7,6 +7,8 @@ export class RoleMapper {
         return {
             id: entity.id,
             name: entity.name,
+            permissions: entity.permissions,
+            level: entity.level,
         };
     }
 

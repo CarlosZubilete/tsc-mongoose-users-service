@@ -4,6 +4,7 @@ import { PostCreateSchema, PostUpdateSchema } from "@schemas/post.schema";
 import { CatchAsync } from "@utils/catch-async.utils";
 import { Router } from "express";
 import { ValidateSchema } from "modules/middlewares/validate-schema.middleware";
+import { VerifyPermissions } from "modules/middlewares/verify-permissions.middleware";
 import { VerifyToken } from "modules/middlewares/verify-token.middleware";
 import { IPostService, PostService } from "modules/services/post.service";
 
@@ -14,13 +15,24 @@ const postController = new PostController(postService);
 
 const postRouter: Router = Router();
 
-postRouter.get("/", CatchAsync(postController.getList));
+postRouter.get(
+    "/",
+    VerifyToken,
+    VerifyPermissions,
+    CatchAsync(postController.getList),
+);
 
-postRouter.get("/:id", CatchAsync(postController.getById));
+postRouter.get(
+    "/:id",
+    VerifyToken,
+    VerifyPermissions,
+    CatchAsync(postController.getById),
+);
 
 postRouter.post(
     "/",
     VerifyToken,
+    VerifyPermissions,
     ValidateSchema(PostCreateSchema),
     CatchAsync(postController.create),
 );
@@ -28,10 +40,16 @@ postRouter.post(
 postRouter.put(
     "/:id",
     VerifyToken,
+    VerifyPermissions,
     ValidateSchema(PostUpdateSchema),
     CatchAsync(postController.update),
 );
 
-postRouter.delete("/:id", VerifyToken, CatchAsync(postController.delete));
+postRouter.delete(
+    "/:id",
+    VerifyToken,
+    VerifyPermissions,
+    CatchAsync(postController.delete),
+);
 
 export default postRouter;

@@ -11,6 +11,7 @@ interface IRoleRepository {
     update(id: string, partialRole: RoleUpdate): Promise<Role | null>;
     delete(id: string): Promise<boolean>;
     // Custom query
+    findManyByName(names: string[]): Promise<Role[]>;
     existsBy(field: Filter): Promise<boolean>;
 }
 
@@ -37,6 +38,10 @@ class RoleRepository implements IRoleRepository {
     async delete(id: string): Promise<boolean> {
         const result = await RoleCollection.findByIdAndDelete(id).exec();
         return result !== null;
+    }
+
+    async findManyByName(names: string[]): Promise<Role[]> {
+        return await RoleCollection.find({ name: { $in: names } }).exec();
     }
 
     async existsBy(field: Filter): Promise<boolean> {

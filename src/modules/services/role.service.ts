@@ -12,6 +12,7 @@ interface IRoleService {
     ): Promise<RoleResponse | null>;
     deleteRole(id: string): Promise<boolean>;
     // custom queries
+    findRoleByName(names: string[]): Promise<RoleResponse[]>;
     existsRoleById(id: string): Promise<boolean>;
     existsRoleByName(name: string): Promise<boolean>;
 }
@@ -51,9 +52,15 @@ class RoleService implements IRoleService {
     }
 
     // Custom queries
+    async findRoleByName(names: string[]): Promise<RoleResponse[]> {
+        const existsRoles = await this.repository.findManyByName(names);
+        return RoleMapper.toDTOList(existsRoles);
+    }
+
     async existsRoleById(id: string): Promise<boolean> {
         return this.repository.existsBy({ _id: id });
     }
+
     async existsRoleByName(name: string): Promise<boolean> {
         return this.repository.existsBy({ name: name });
     }

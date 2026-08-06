@@ -1,5 +1,8 @@
 @startuml
 
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam shadowing false
 
 <style>
 participant {
@@ -14,7 +17,7 @@ autonumber
 
 actor "Client" as client
 
-box "Express Application Pipeline" #FFF0F5
+box  #FFF0F5
 participant " Router " as router
 participant " SchemaValidation \n(Zod)" as validate
 participant " CatchAsync \n(Wrapper)" as catch
@@ -62,6 +65,6 @@ end note
 
 errorHandler -[#red]> client : Response (JSON Error Message)
 
-footer github.com/CarlosZubilete | July 2026
+footer github.com/CarlosZubilete | | Created: July 2026 | Updated: August 2026
 
 @enduml

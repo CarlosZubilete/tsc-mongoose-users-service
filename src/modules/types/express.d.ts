@@ -1,11 +1,12 @@
-import { User } from "@models/user.model";
+import {  RoleResponse } from "@models/role.model";
+import { UserResponse } from "@models/user.model";
 
 declare global {
     namespace Express {
         interface Request {
-            user_id: string;
+            user_logged: UserResponse;
+            user_logged_roles: RoleResponse[];
             token_verified: string;
         }
-
     }
 }

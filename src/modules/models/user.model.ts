@@ -1,4 +1,5 @@
 import { Document } from "mongoose";
+import { Role, RoleResponse } from "./role.model";
 
 // domain
 interface User extends Document {
@@ -7,6 +8,7 @@ interface User extends Document {
     username: string;
     email: string;
     password: string;
+    roles: Role[];
 }
 
 // Create
@@ -15,6 +17,7 @@ interface UserCreate {
     username: string;
     email: string;
     password: string;
+    roles: Role[];
 }
 
 // Update
@@ -23,6 +26,7 @@ interface UserUpdate {
     username?: string;
     email?: string;
     password?: string;
+    roles: Role[];
 }
 
 // Response
@@ -30,7 +34,8 @@ interface UserResponse {
     id: string;
     email: string;
     username: string;
-    // Todo: username and role.
+    roles: string[];
+
 }
 
 export { User, UserCreate, UserUpdate, UserResponse };

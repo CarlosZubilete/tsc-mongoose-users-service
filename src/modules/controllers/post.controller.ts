@@ -34,7 +34,7 @@ export class PostController {
     public create = async (req: Request, res: Response) => {
         const newPost = req.body as PostCreate;
 
-        newPost.userId = req.user_id;
+        newPost.userId = req.user_logged.id;
 
         const created = await this.service.createPost(newPost);
 
@@ -44,8 +44,8 @@ export class PostController {
     public update = async (req: Request, res: Response) => {
         const id = req.params.id as string;
         // Valid Post
-
-        const userId = req.user_id;
+        const userId = req.user_logged.id;
+        // Check if the role is an user-role. Because manager , admin and root can do this.
         const existsPostWithUser = await this.service.existsByIdAndUserId(
             id,
             userId,
@@ -53,7 +53,7 @@ export class PostController {
 
         if (!existsPostWithUser)
             throw new NotFoundError(
-                `Post not found or you do not have permission to delete it.`,
+                `Post not found or this Post is not yours to update it.`,
             );
 
         const updatePost = req.body as PostUpdate;
@@ -68,12 +68,12 @@ export class PostController {
     public delete = async (req: Request, res: Response) => {
         const id = req.params.id as string;
 
-        const userId = req.user_id;
+        const userId = req.user_logged.id;
 
         const deleted = await this.service.deletePost(id, userId);
         if (!deleted)
             throw new NotFoundError(
-                `Post not found or you do not have permission to delete it.`,
+                `Post not found or this Post is not yours to delete it.`,
             );
 
         res.status(204).end();

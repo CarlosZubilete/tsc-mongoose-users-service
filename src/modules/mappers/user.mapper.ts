@@ -6,9 +6,11 @@ export class UserMapper {
         if (!user) return null;
 
         return {
-            id: user.id.toString(),
+            id: user.id,
             email: user.email,
             username: user.username,
+            roles: user.roles.map((role) => role.name),
+            // permissions: user.permissions,
         };
     }
 
@@ -17,17 +19,4 @@ export class UserMapper {
             .map((user) => this.toDTO(user))
             .filter((user) => user !== null); // as UserResponse[];
     }
-
-    // public static async toEntity(dto: UserCreate): Promise<UserCreate | null> {
-    //     if (!dto) return null;
-
-    //     const hashingPassword = await hashPassword(dto.password);
-
-    //     return {
-    //         name: dto.username,
-    //         username: dto.username,
-    //         email: dto.email,
-    //         password: hashingPassword,
-    //     };
-    // }
 }

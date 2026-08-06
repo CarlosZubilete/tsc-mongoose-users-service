@@ -7,6 +7,12 @@ const User: Schema = new Schema<User>(
         username: { type: String, required: true, unique: true, trim: true },
         email: { type: String, require: true, unique: true, trim: true },
         password: { type: String, require: true, trim: true },
+        roles: [
+            {
+                ref: "roles",
+                type: Schema.Types.ObjectId,
+            },
+        ],
     },
     {
         timestamps: true,

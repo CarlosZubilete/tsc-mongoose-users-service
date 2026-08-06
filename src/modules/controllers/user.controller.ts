@@ -50,8 +50,6 @@ export class UserController {
 
         const created = await this.service.createUser(newUser);
 
-        // TODO: verify "created !== null"
-
         res.status(201).json(created);
     };
 
@@ -90,8 +88,6 @@ export class UserController {
         const partialUser = req.body as UserUpdate;
 
         const updated = await this.service.updateUser(id, partialUser);
-
-        // TODO: verify "updated !== null"
 
         res.status(200).json(updated);
     };

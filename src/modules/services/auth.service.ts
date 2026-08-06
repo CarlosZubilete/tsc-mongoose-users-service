@@ -3,7 +3,7 @@ import { UserResponse } from "@models/user.model";
 import { IAuthRepository } from "@repositories/auth.repository";
 import { signJwt } from "@utils/jwt";
 import { AuthMapper } from "modules/mappers/auth.mapper";
-import mongoose from "mongoose";
+
 
 interface IAuthService {
     login(user: UserResponse): Promise<AuthResponse>;
@@ -24,6 +24,7 @@ class AuthService implements IAuthService {
             sub: user.id,
             email: user.email,
             username: user.username,
+            roles: user.roles,
         });
         // Parse to AuthCreate
         const auth = AuthMapper.toEntity(token, user.id);
@@ -42,7 +43,7 @@ class AuthService implements IAuthService {
         // valid token
         const result = await this.repository.existsBy(token, sub);
 
-        console.log("================== isValidToken =========== ", result); 
+        // console.log("================== isValidToken =========== ", result);
         return result;
     }
 }

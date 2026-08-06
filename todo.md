@@ -1,7 +1,3 @@
-1. Implement a delete user. 
-2. Create a map with plant uml : how the flow data is
-3. Create a DER about the project.
-4. Create a professional README.md
-5. Create roles: name : string,
-6. Auth
-7. Crypt the password in MapperUser
+1. An user (admin - manager) can't delete by himself/herself the user (admin - manager) account.
+2. Fix the scope, when an user wants to delete his/her own account, the system should not allow it and should display an appropriate message.
+3. If an user is not owner of the posts, user cannot delete or update for those. But If cannot with the right permissions.

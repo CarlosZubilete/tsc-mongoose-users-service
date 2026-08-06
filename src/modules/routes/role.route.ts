@@ -4,7 +4,9 @@ import { CreateRoleSchema, UpdateRoleSchema } from "@schemas/role.schema";
 import { CatchAsync } from "@utils/catch-async.utils";
 import { Router } from "express";
 import { ValidateSchema } from "modules/middlewares/validate-schema.middleware";
-import { IRoleService, RoleService } from "modules/services/roles.service";
+import { VerifyPermissions } from "modules/middlewares/verify-permissions.middleware";
+import { VerifyToken } from "modules/middlewares/verify-token.middleware";
+import { IRoleService, RoleService } from "modules/services/role.service";
 
 // Dependency injection
 const roleRepository: IRoleRepository = new RoleRepository();
@@ -13,22 +15,45 @@ const roleController = new RoleController(roleService);
 
 const roleRouter: Router = Router();
 
-roleRouter.get("/", CatchAsync(roleController.getList));
+// User and guest don't allow access to these endpoints.
+// Manager just could see them.
+// It's just handle for 'admin' and root role.
 
-roleRouter.get("/:id", CatchAsync(roleController.getById));
+roleRouter.get(
+    "/",
+    VerifyToken,
+    VerifyPermissions,
+    CatchAsync(roleController.getList),
+);
+
+roleRouter.get(
+    "/:id",
+    VerifyToken,
+    VerifyPermissions,
+    CatchAsync(roleController.getById),
+);
 
 roleRouter.post(
     "/",
+    VerifyToken,
+    VerifyPermissions,
     ValidateSchema(CreateRoleSchema),
     CatchAsync(roleController.create),
 );
 
 roleRouter.put(
     "/:id",
+    VerifyToken,
+    VerifyPermissions,
     ValidateSchema(UpdateRoleSchema),
     CatchAsync(roleController.update),
 );
 
-roleRouter.delete("/:id", CatchAsync(roleController.delete));
+roleRouter.delete(
+    "/:id",
+    VerifyToken,
+    VerifyPermissions,
+    CatchAsync(roleController.delete),
+);
 
 export default roleRouter;

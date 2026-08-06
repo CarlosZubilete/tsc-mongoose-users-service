@@ -1,12 +1,22 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyJwt } from "@utils/jwt";
-import { InternalServerError } from "@errors/internal-server-error";
 import { AuthService, IAuthService } from "modules/services/auth.service";
 import { AuthRepository, IAuthRepository } from "@repositories/auth.repository";
 import { InvalidTokenError } from "@errors/invalid-token-error";
+import { UserRepository } from "@repositories/user.repository";
+import { IUserService, UserService } from "modules/services/user.service";
+import { IRoleRepository, RoleRepository } from "@repositories/role.repository";
+import { IRoleService, RoleService } from "modules/services/role.service";
+import { AuthTokenPayload } from "@models/auth.model";
 
 const authRepository: IAuthRepository = new AuthRepository();
 const authService: IAuthService = new AuthService(authRepository);
+
+const userRepository = new UserRepository();
+const userService: IUserService = new UserService(userRepository);
+
+const roleRepository: IRoleRepository = new RoleRepository();
+const roleService: IRoleService = new RoleService(roleRepository);
 
 export const VerifyToken = async (
     req: Request,
@@ -15,8 +25,6 @@ export const VerifyToken = async (
 ) => {
     try {
         const authHeader = req.headers.authorization;
-
-        // console.log(authHeader);
         // Check if the header exists
         if (!authHeader) throw new InvalidTokenError("No token provided");
 
@@ -24,29 +32,41 @@ export const VerifyToken = async (
         const token = req.headers.authorization
             ?.replace(/Bearer\s+/, "")
             .trim() as string;
-        // TODO: Do I need validated the payload ?
 
-        // Verify with the secret key
-        const payloadVerified = verifyJwt(token);
+        // 1.Verify with the secret key
+        const payloadVerified = verifyJwt(token) as AuthTokenPayload;
 
-        // Verify is not expired in the database
+        // 2. Verify is not expired in the database
         const userId = payloadVerified.sub as string;
         const isValidToken = await authService.isValidToken(token, userId);
 
         if (!isValidToken)
             throw new InvalidTokenError("Token was expired or invalid");
 
-        // Token verified
+        // 3. Find the user.
+        const user = await userService.findUserById(userId);
+        if (!user)
+            throw new InvalidTokenError(
+                "User associated with this token no longer exists",
+            );
+
+        // 3. Find the User's roles.
+        const userRoles = await roleService.findRoleByName(
+            payloadVerified.roles,
+        );
+
+        if (userRoles.length === 0)
+            throw new InvalidTokenError(
+                "User Roles associated with this token no longer exists",
+            );
+
+        // Token verified and
         req.token_verified = token;
-        req.user_id = userId;
+        req.user_logged = user;
+        req.user_logged_roles = userRoles;
 
         next();
     } catch (error) {
-        if (error instanceof InvalidTokenError) {
-            return next(error);
-        }
-        // show the error
-        console.error("Token verification error: ", error);
-        return next(new InvalidTokenError("Token verification failed"));
+        next(error);
     }
 };

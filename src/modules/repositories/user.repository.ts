@@ -11,28 +11,30 @@ interface IUserRepository {
     update(id: string, partialUser: UserUpdate): Promise<User | null>;
     delete(id: string): Promise<boolean>;
     // Custom queries
-    findOne(field: Filter): Promise<User | null>;
+    findBy(field: Filter): Promise<User | null>;
     existsBy(field: Filter): Promise<boolean>;
 }
 
 class UserRepository implements IUserRepository {
     async findAll(): Promise<User[]> {
-        return await UserCollection.find();
+        return await UserCollection.find().populate("roles").exec();
     }
 
     async findById(id: string): Promise<User | null> {
-        return await UserCollection.findById(id).exec();
+        return await UserCollection.findById(id).populate("roles").exec();
     }
 
     async create(newUser: UserCreate): Promise<User> {
         const created = new UserCollection(newUser);
-        return await created.save();
+        return (await created.save()).populate("roles");
     }
 
     async update(id: string, user: Partial<User>): Promise<User | null> {
         return await UserCollection.findByIdAndUpdate(id, user, {
             new: true,
-        }).exec();
+        })
+            .populate("roles")
+            .exec();
     }
 
     async delete(id: string): Promise<boolean> {
@@ -40,11 +42,11 @@ class UserRepository implements IUserRepository {
         return result !== null;
     }
 
-    async findOne(field: Filter): Promise<User | null> {
-        return await UserCollection.findOne(field).exec();
+    // Custom queries:
+    async findBy(field: Filter): Promise<User | null> {
+        return await UserCollection.findOne(field).populate("roles").exec();
     }
 
-    // Custom queries:
     async existsBy(field: Filter): Promise<boolean> {
         const exists = await UserCollection.exists(field).exec();
         return exists ? true : false;
