@@ -4,7 +4,9 @@ The application is structured around four primary domain models: **User**, **Rol
 
 ---
 
-![Domain Model](../assets/domain_model.png)
+<p align="center"> 
+<img src="../assets/domain_model.png" alt="Domain Model" width="800">
+</p>
 
 #### **1. User Domain**
 

@@ -67,6 +67,6 @@ export const VerifyToken = async (
 
         next();
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };

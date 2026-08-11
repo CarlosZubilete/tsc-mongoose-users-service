@@ -29,7 +29,7 @@ class UserRepository implements IUserRepository {
         return (await created.save()).populate("roles");
     }
 
-    async update(id: string, user: Partial<User>): Promise<User | null> {
+    async update(id: string, user: UserUpdate): Promise<User | null> {
         return await UserCollection.findByIdAndUpdate(id, user, {
             new: true,
         })

@@ -1,0 +1,76 @@
+@startuml
+
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+<style>
+participant {
+  padding: 20px;
+  maxMessageSize: 200px
+}
+</style>
+
+title Security Middlewares Flow
+
+autonumber
+
+
+box  #E3F2FD
+participant " Router " as router
+participant " VerifyToken \n(AuthN)" as verifyToken
+participant " VerifyPermissions \n(AuthZ)" as verifyPerms
+participant " AssignRoles \n(Hierarchy)" as assignRoles
+participant " GlobalErrorHandler " as errorHandler
+end box
+
+
+
+== Phase 1: Authentication ==
+router -> verifyToken : Check Session
+
+alt Invalid Token Scenario
+  note right of verifyToken #fff0ee
+    Missing header, invalid signature,
+    or expired in database.
+  end note
+  verifyToken -[#red]> errorHandler : next(InvalidTokenError)
+else Token is Valid
+  verifyToken -[#green]> router : next() (Attaches req.user_logged)
+end
+
+== Phase 2: Authorization ==
+router -> verifyPerms : Check Permissions
+
+alt Insufficient Permissions
+  note right of verifyPerms #fff0ee
+    Extracts path & method.
+    User lacks required scope
+    (e.g., 'posts_write').
+  end note
+  verifyPerms -[#red]> errorHandler : next(UnauthorizedError)
+else Permissions Match
+  verifyPerms -[#green]> router : next()
+end
+
+== Phase 3: Role Assignment (If Applicable) ==
+router -> assignRoles : Validate Roles Payload
+
+alt Privilege Escalation Attempt
+  note right of assignRoles #fff0ee
+    Requester tries to assign a role
+    equal to or higher than their
+    own hierarchy level.
+  end note
+  assignRoles -[#red]> errorHandler : next(ForbiddenError)
+else Safe Assignment
+  note right of assignRoles #fff0ee
+    Default to "guest" OR
+    successfully map role IDs.
+  end note
+  assignRoles -[#green]> router : next() (Proceeds to Controller)
+end
+
+footer github.com/CarlosZubilete | Created: August 2026
+
+@enduml

@@ -4,7 +4,9 @@ This diagram explains how the application catches and manages failures without c
 
 ---
 
-![Domain Model](../assets/global_error_handling_flow.png)
+<p align="center"> 
+<img src="../assets/global_error_handling_flow.png" alt="Global Error Handling Flow" width="800">
+</p>
 
 - **Scenario A (Bad Input):** If a user sends incorrect data, Zod detects the invalid fields immediately. It blocks the request from reaching the Controller and sends the error directly to the Global Error Handler.
 

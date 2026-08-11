@@ -10,7 +10,7 @@ const roleService: IRoleService = new RoleService(roleRepository);
 /// This middleware is using when it needed to assign a role in a new user.
 export const AssignRoles = async (
     req: Request,
-    res: Response,
+    _: Response,
     next: NextFunction,
 ) => {
     try {
@@ -67,10 +67,10 @@ export const AssignRoles = async (
 
         req.body.roles = existsRoles.map((role) => role.id);
 
-        // console.log("Verify roles: >> ", req.body.roles);
+        console.log("Verify roles: >> ", req.body.roles);
 
         next();
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };

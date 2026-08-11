@@ -29,7 +29,6 @@ export const VerifyPermissions = async (
             (p) => p.method === Method[method as keyof typeof Method],
         );
 
-
         console.log(`Base method >> ${baseMethod}`);
         // Create a copy of the permission object to avoid mutating the global array
         const copyBaseMethod = baseMethod
@@ -65,7 +64,7 @@ export const VerifyPermissions = async (
 
         next();
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 

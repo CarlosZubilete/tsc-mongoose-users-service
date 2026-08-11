@@ -10,7 +10,7 @@ interface IPostService {
         id: string,
         partialPost: PostUpdate,
     ): Promise<PostResponse | null>;
-    deletePost(id: string, userId: string): Promise<boolean>;
+    deletePost(id: string): Promise<boolean>;
     //
     existsByIdAndUserId(id: string, userId: string): Promise<boolean>;
 }
@@ -41,24 +41,19 @@ class PostService implements IPostService {
         id: string,
         partialPost: PostUpdate,
     ): Promise<PostResponse | null> {
-        const postUpdated = await this.repository.update(
-            id,
-            partialPost.userId,
-            partialPost,
-        );
+        const postUpdated = await this.repository.update(id, partialPost);
         return postUpdated ? PostMapper.toDTO(postUpdated) : null;
     }
 
-    async deletePost(id: string, userId: string): Promise<boolean> {
-        return await this.repository.delete(id, userId);
+    async deletePost(id: string): Promise<boolean> {
+        return await this.repository.delete(id);
     }
 
     async existsByIdAndUserId(id: string, userId: string): Promise<boolean> {
-        const existingPost = await this.repository.existsBy({
+        return await this.repository.existsBy({
             _id: id,
             userId: userId,
         });
-        return existingPost ? true : false;
     }
 }
 

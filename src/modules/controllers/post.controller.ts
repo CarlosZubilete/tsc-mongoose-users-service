@@ -10,15 +10,11 @@ export class PostController {
         this.service = postService;
     }
 
-    // This returns the whole list from the database.
-    // Not needed token , permissions.
     public getList = async (_: Request, res: Response) => {
         const posts = await this.service.findPosts();
         res.status(200).json(posts);
     };
 
-    // This returns one post from the database.
-    // Not needed token , permissions.
     public getById = async (req: Request, res: Response) => {
         const id = req.params.id as string;
         const post = await this.service.findPostById(id);
@@ -29,8 +25,6 @@ export class PostController {
         res.status(200).json(post);
     };
 
-    // todo: Can we do a validation by unique name post in each user ?.
-    // Here need token and permissions.
     public create = async (req: Request, res: Response) => {
         const newPost = req.body as PostCreate;
 
@@ -45,20 +39,35 @@ export class PostController {
         const id = req.params.id as string;
         // Valid Post
         const userId = req.user_logged.id;
-        // Check if the role is an user-role. Because manager , admin and root can do this.
-        const existsPostWithUser = await this.service.existsByIdAndUserId(
-            id,
-            userId,
+
+        // Check if the post whit Id exists.
+        const existingPost = await this.service.findPostById(id);
+        if (!existingPost)
+            throw new NotFoundError(`Post with this id ${id} not found.`);
+
+        // Check if the user is strictly a standard "user"
+        const isStandardUser = req.user_logged_roles.find(
+            ({ name }) => name === "user",
         );
 
-        if (!existsPostWithUser)
-            throw new NotFoundError(
-                `Post not found or this Post is not yours to update it.`,
+        console.log("IS USER ROLE >> ", isStandardUser);
+
+        // If It's a standard user: enforce Ownership for standard users
+        if (isStandardUser) {
+            const existsPostWithUser = await this.service.existsByIdAndUserId(
+                id,
+                userId,
             );
+
+            if (!existsPostWithUser)
+                throw new NotFoundError(
+                    `Post not found or this Post is not yours to update it.`,
+                );
+        }
 
         const updatePost = req.body as PostUpdate;
 
-        updatePost.userId = userId;
+        updatePost.userId = existingPost.userId;
 
         const updated = await this.service.updatePost(id, updatePost);
 
@@ -70,12 +79,30 @@ export class PostController {
 
         const userId = req.user_logged.id;
 
-        const deleted = await this.service.deletePost(id, userId);
+        // Check if the user is strictly a standard "user"
+        const isStandardUser = req.user_logged_roles.find(
+            ({ name }) => name === "user",
+        );
+
+        // If It's a standard user: enforce Ownership for standard users
+        if (isStandardUser) {
+            const existsPostWithUser = await this.service.existsByIdAndUserId(
+                id,
+                userId,
+            );
+
+            if (!existsPostWithUser)
+                throw new NotFoundError(
+                    `Post not found or this Post is not yours to update it.`,
+                );
+        }
+
+        const deleted = await this.service.deletePost(id);
+
         if (!deleted)
             throw new NotFoundError(
                 `Post not found or this Post is not yours to delete it.`,
             );
-
         res.status(204).end();
     };
 }

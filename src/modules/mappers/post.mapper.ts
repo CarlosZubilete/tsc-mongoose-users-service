@@ -8,6 +8,7 @@ export class PostMapper {
             id: entity.id,
             name: entity.name,
             description: entity.description,
+            userId: entity.userId,
         };
     }
 

@@ -10,10 +10,10 @@ interface IPostRepository {
     create(newPost: PostCreate): Promise<Post>;
     update(
         id: string,
-        userId: string,
+        // userId: string,
         partialPost: PostUpdate,
     ): Promise<Post | null>;
-    delete(id: string, userId: string): Promise<boolean>;
+    delete(id: string): Promise<boolean>;
     //
     existsBy(field: Filter): Promise<boolean>;
 }
@@ -34,23 +34,24 @@ class PostRepository implements IPostRepository {
 
     async update(
         id: string,
-        userId: string,
+        // userId: string,
         partialPost: PostUpdate,
     ): Promise<Post | null> {
-        return await PostCollection.findOneAndUpdate(
-            { _id: id, userId: userId },
-            partialPost,
-            {
-                new: true,
-            },
-        ).exec();
+        // return await PostCollection.findOneAndUpdate(id, partialPost, {
+        //     new: true,
+        // }).exec();
+        return await PostCollection.findByIdAndUpdate(id, partialPost, {
+            new: true,
+        }).exec();
     }
 
-    async delete(id: string, userId: string): Promise<boolean> {
-        const result = await PostCollection.findOneAndDelete({
-            _id: id,
-            userId: userId,
-        }).exec();
+    async delete(id: string): Promise<boolean> {
+        // const result = await PostCollection.findOneAndDelete({
+        //     _id: id,
+        //     userId: userId,
+        // }).exec();
+        // return result !== null;
+        const result = await PostCollection.findByIdAndDelete(id).exec();
         return result !== null;
     }
 

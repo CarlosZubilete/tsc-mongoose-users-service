@@ -4,19 +4,14 @@ This project is a REST API built with Node.js, Express, TypeScript, MongoDB, and
 
 ## 📖 Table of Contents
 
-
 - [Project Overview](documents/proyect_overview.md)
 - [Technical Architecture](documents/technical_architecture.md)
 - [Domain models](documents/domain_models.md)
-- [Normal request flow](documents/mormal_request_flow.md)
+- [Normal request flow](documents/normal_request_flow.md)
 - [Global error handling flow](documents/global_error_handling_flow.md)
-- [Middlewares](documents/middlewares.md)
+- [Middlewares](documents/security_middlewares_flow.md)
 - [API Endpoints](documents/api_endpoints.md)
-- [Authors](#authors)
-
 
 ---
 
-## Authors
-
-- Carlos Zubilete | [LinkedIn](https://www.linkedin.com/in/carlos-zubilete-sanchez/)
+**Created by:** Carlos Zubilete 

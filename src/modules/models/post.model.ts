@@ -1,10 +1,10 @@
-import { Types } from "mongoose";
 
 interface Post {
     id: string;
     name: string;
     description: string;
-    userId: Types.ObjectId;
+    // userId: Types.ObjectId;
+    userId: string;
 }
 
 interface PostCreate {
@@ -23,6 +23,7 @@ interface PostResponse {
     id: string;
     name: string;
     description: string;
+    userId: string;
 }
 
 export { Post, PostCreate, PostUpdate, PostResponse };
