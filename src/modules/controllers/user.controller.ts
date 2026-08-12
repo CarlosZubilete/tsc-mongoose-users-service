@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { IUserService } from "modules/services/user.service";
+import { IUserService } from "@services/user.service";
 import { UserCreate, UserUpdate } from "@models/user.model";
 import { NotFoundError } from "@errors/not-found-error";
 import { ConflictError } from "@errors/conflict-error";

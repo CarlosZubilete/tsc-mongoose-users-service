@@ -1,5 +1,5 @@
 import { Document } from "mongoose";
-import { Role, RoleResponse } from "./role.model";
+import { Role } from "./role.model";
 
 // domain
 interface User extends Document {

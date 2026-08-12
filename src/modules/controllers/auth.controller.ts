@@ -3,8 +3,8 @@ import { InternalServerError } from "@errors/internal-server-error";
 import { NotFoundError } from "@errors/not-found-error";
 import { AuthLogin } from "@models/auth.model";
 import { Request, Response } from "express";
-import { IAuthService } from "modules/services/auth.service";
-import { IUserService } from "modules/services/user.service";
+import { IAuthService } from "@services/auth.service";
+import { IUserService } from "@services/user.service";
 import { ConflictError } from "@errors/conflict-error";
 import { UserCreate } from "@models/user.model";
 

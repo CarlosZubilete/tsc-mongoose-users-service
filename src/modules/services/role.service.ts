@@ -1,6 +1,6 @@
 import { RoleCreate, RoleUpdate, RoleResponse } from "@models/role.model";
 import { IRoleRepository } from "@repositories/role.repository";
-import { RoleMapper } from "modules/mappers/role.mapper";
+import { RoleMapper } from "@mappers/role.mapper";
 
 interface IRoleService {
     findRoles(): Promise<RoleResponse[]>;

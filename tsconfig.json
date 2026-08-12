@@ -1,31 +1,32 @@
 {
   "compilerOptions": {
     "target": "ES6",
+    "module": "NodeNext",
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "node",
-    "baseUrl": "./src",
+    "moduleResolution": "nodenext",
     "paths": {
-      "@errors/*": ["modules/errors/*"],
-      "@controllers/*": ["modules/controllers/*"],
-      "@services/*": ["modules/service/*"],
-      "@repositories/*": ["modules/repositories/*"],
-      "@models/*": ["modules/models/*"],
-      "@schemas/*": ["modules/schemas/*"],
-      "@routes/*": ["modules/routes/*"],
-      "@utils/*": ["modules/utils/*"],
-      // Singular name
-      "@database/*": ["modules/database/*"],
-      // 
-      "@source/*": ["source/*"],
-      "@config/*": ["config/*"]
+      "@errors/*": ["./src/modules/errors/*"],
+      "@controllers/*": ["./src/modules/controllers/*"],
+      "@services/*": ["./src/modules/services/*"],
+      "@repositories/*": ["./src/modules/repositories/*"],
+      "@models/*": ["./src/modules/models/*"],
+      "@schemas/*": ["./src/modules/schemas/*"],
+      "@routes/*": ["./src/modules/routes/*"],
+      "@utils/*": ["./src/modules/utils/*"],
+      "@mappers/*": ["./src/modules/mappers/*"],
+      "@middlewares/*": ["./src/modules/middlewares/*"],
+      "@collections/*": ["./src/modules/collections/*"],
+      // External
+      "@sources/*": ["./src/sources/*"],
+      "@config/*": ["./src/config/*"]
     },
     "typeRoots": ["./src/modules/types", "node_modules/@types"]
   },
   "include": ["src"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "dist"],
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   }

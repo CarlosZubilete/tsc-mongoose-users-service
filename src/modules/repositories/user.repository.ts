@@ -1,5 +1,5 @@
 import { User, UserCreate, UserUpdate } from "@models/user.model";
-import { UserCollection } from "modules/database/user.collection";
+import { UserCollection } from "../collections/user.collection";
 
 // key:value
 type Filter = Record<string, unknown>;

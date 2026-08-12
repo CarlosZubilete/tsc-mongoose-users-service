@@ -2,7 +2,7 @@ import { AuthLogin } from "@models/auth.model";
 import { UserResponse, UserCreate, UserUpdate } from "@models/user.model";
 import { IUserRepository } from "@repositories/user.repository";
 import { comparePassword, hashPassword } from "@utils/bcrypt";
-import { UserMapper } from "modules/mappers/user.mapper";
+import { UserMapper } from "@mappers/user.mapper";
 
 interface IUserService {
     findUsers(): Promise<UserResponse[]>;

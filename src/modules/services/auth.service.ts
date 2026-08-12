@@ -2,7 +2,7 @@ import { AuthResponse } from "@models/auth.model";
 import { UserResponse } from "@models/user.model";
 import { IAuthRepository } from "@repositories/auth.repository";
 import { signJwt } from "@utils/jwt";
-import { AuthMapper } from "modules/mappers/auth.mapper";
+import { AuthMapper } from "@mappers/auth.mapper";
 
 
 interface IAuthService {

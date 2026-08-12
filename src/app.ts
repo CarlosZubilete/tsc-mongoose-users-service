@@ -1,4 +1,4 @@
-import app from "sources/server";
+import app from "@sources/server";
 import dotenv from "dotenv";
 import "@config/connection"; // Initialize MongoDB connection
 

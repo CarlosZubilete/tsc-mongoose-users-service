@@ -4,11 +4,11 @@ import { IUserRepository, UserRepository } from "@repositories/user.repository";
 import { AuthLoginSchema, AuthRegisterSchema } from "@schemas/auth.schema";
 import { CatchAsync } from "@utils/catch-async.utils";
 import { Router } from "express";
-import { ValidateSchema } from "modules/middlewares/validate-schema.middleware";
-import { AssignRoles } from "modules/middlewares/assign-role.middleware";
-import { VerifyToken } from "modules/middlewares/verify-token.middleware";
-import { AuthService, IAuthService } from "modules/services/auth.service";
-import { IUserService, UserService } from "modules/services/user.service";
+import { ValidateSchema } from "@middlewares/validate-schema.middleware";
+import { AssignRoles } from "@middlewares/assign-role.middleware";
+import { VerifyToken } from "@middlewares/verify-token.middleware";
+import { AuthService, IAuthService } from "@services/auth.service";
+import { IUserService, UserService } from "@services/user.service";
 
 
 // ===== Dependency Injections =====

@@ -1,12 +1,12 @@
+import { Router } from "express";
 import { PostController } from "@controllers/post.controller";
 import { IPostRepository, PostRepository } from "@repositories/post.repository";
 import { PostCreateSchema, PostUpdateSchema } from "@schemas/post.schema";
 import { CatchAsync } from "@utils/catch-async.utils";
-import { Router } from "express";
-import { ValidateSchema } from "modules/middlewares/validate-schema.middleware";
-import { VerifyPermissions } from "modules/middlewares/verify-permissions.middleware";
-import { VerifyToken } from "modules/middlewares/verify-token.middleware";
-import { IPostService, PostService } from "modules/services/post.service";
+import { ValidateSchema } from "@middlewares/validate-schema.middleware";
+import { VerifyPermissions } from "@middlewares/verify-permissions.middleware";
+import { VerifyToken } from "@middlewares/verify-token.middleware";
+import { IPostService, PostService } from "@services/post.service";
 
 // Dependency injection
 const postRepository: IPostRepository = new PostRepository();

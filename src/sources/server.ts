@@ -1,9 +1,9 @@
 // This file contains the logic about our server
 import { API_NAME, API_VERSION } from "@config/env";
 import express, { Application } from "express";
-import { GlobalErrorHandler } from "modules/middlewares/global-error-handler.middleware";
+import { GlobalErrorHandler } from "@middlewares/global-error-handler.middleware";
 import morgan from "morgan";
-import router from "sources/routes";
+import router from "@sources/routes";
 
 const app: Application = express();
 

@@ -1,4 +1,4 @@
-import { AuthenticationCollection } from "@database/auth.collection";
+import { AuthenticationCollection } from "../collections/auth.collection";
 import { AuthCreate, Authentication } from "@models/auth.model";
 
 // key:value

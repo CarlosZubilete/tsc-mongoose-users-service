@@ -1,4 +1,4 @@
-import { PostCollection } from "@database/post.collection";
+import { PostCollection } from "../collections/post.collection";
 import { Post, PostCreate, PostUpdate } from "@models/post.model";
 
 // key:value

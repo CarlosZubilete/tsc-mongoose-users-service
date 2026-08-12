@@ -1,4 +1,3 @@
-import { API_NAME, API_VERSION } from "@config/env";
 import { UnauthorizedError } from "@errors/unauthorized-error";
 import { Method, permissions } from "@models/permissions.model";
 import { NextFunction, Request, Response } from "express";

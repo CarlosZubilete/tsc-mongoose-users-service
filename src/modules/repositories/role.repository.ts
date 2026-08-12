@@ -1,4 +1,4 @@
-import { RoleCollection } from "@database/role.collection";
+import { RoleCollection } from "../collections/role.collection";
 import { Role, RoleCreate, RoleUpdate } from "@models/role.model";
 
 // key:value

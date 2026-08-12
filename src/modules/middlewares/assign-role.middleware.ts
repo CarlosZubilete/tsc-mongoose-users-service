@@ -2,7 +2,7 @@ import { ForbiddenError } from "@errors/forbidden-error";
 import { NotFoundError } from "@errors/not-found-error";
 import { IRoleRepository, RoleRepository } from "@repositories/role.repository";
 import { NextFunction, Request, Response } from "express";
-import { IRoleService, RoleService } from "modules/services/role.service";
+import { IRoleService, RoleService } from "@services/role.service";
 
 const roleRepository: IRoleRepository = new RoleRepository();
 const roleService: IRoleService = new RoleService(roleRepository);

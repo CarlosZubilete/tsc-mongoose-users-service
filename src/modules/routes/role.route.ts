@@ -1,12 +1,12 @@
+import { Router } from "express";
 import { RoleController } from "@controllers/role.controller";
 import { IRoleRepository, RoleRepository } from "@repositories/role.repository";
 import { CreateRoleSchema, UpdateRoleSchema } from "@schemas/role.schema";
 import { CatchAsync } from "@utils/catch-async.utils";
-import { Router } from "express";
-import { ValidateSchema } from "modules/middlewares/validate-schema.middleware";
-import { VerifyPermissions } from "modules/middlewares/verify-permissions.middleware";
-import { VerifyToken } from "modules/middlewares/verify-token.middleware";
-import { IRoleService, RoleService } from "modules/services/role.service";
+import { ValidateSchema } from "@middlewares/validate-schema.middleware";
+import { VerifyPermissions } from "@middlewares/verify-permissions.middleware";
+import { VerifyToken } from "@middlewares/verify-token.middleware";
+import { IRoleService, RoleService } from "@services/role.service";
 
 // Dependency injection
 const roleRepository: IRoleRepository = new RoleRepository();

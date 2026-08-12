@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { IUserRepository, UserRepository } from "@repositories/user.repository";
-import { IUserService, UserService } from "modules/services/user.service";
+import { IUserService, UserService } from "@services/user.service";
 import { UserController } from "@controllers/user.controller";
 import { CatchAsync } from "@utils/catch-async.utils";
-import { ValidateSchema } from "modules/middlewares/validate-schema.middleware";
+import { ValidateSchema } from "@middlewares/validate-schema.middleware";
 import { CreateUserSchema, UpdateUserSchema } from "@schemas/user.schema";
-import { AssignRoles } from "modules/middlewares/assign-role.middleware";
-import { VerifyPermissions } from "modules/middlewares/verify-permissions.middleware";
-import { VerifyToken } from "modules/middlewares/verify-token.middleware";
+import { AssignRoles } from "@middlewares/assign-role.middleware";
+import { VerifyPermissions } from "@middlewares/verify-permissions.middleware";
+import { VerifyToken } from "@middlewares/verify-token.middleware";
 
 // Dependency injection
 const userRepository: IUserRepository = new UserRepository();

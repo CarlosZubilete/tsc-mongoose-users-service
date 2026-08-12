@@ -2,7 +2,7 @@ import { ConflictError } from "@errors/conflict-error";
 import { NotFoundError } from "@errors/not-found-error";
 import { RoleCreate, RoleUpdate } from "@models/role.model";
 import { Request, Response } from "express";
-import { IRoleService } from "modules/services/role.service";
+import { IRoleService } from "@services/role.service";
 
 export class RoleController {
     private service: IRoleService;

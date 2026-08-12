@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyJwt } from "@utils/jwt";
-import { AuthService, IAuthService } from "modules/services/auth.service";
+import { AuthService, IAuthService } from "@services/auth.service";
 import { AuthRepository, IAuthRepository } from "@repositories/auth.repository";
 import { InvalidTokenError } from "@errors/invalid-token-error";
 import { UserRepository } from "@repositories/user.repository";
-import { IUserService, UserService } from "modules/services/user.service";
+import { IUserService, UserService } from "@services/user.service";
 import { IRoleRepository, RoleRepository } from "@repositories/role.repository";
-import { IRoleService, RoleService } from "modules/services/role.service";
+import { IRoleService, RoleService } from "@services/role.service";
 import { AuthTokenPayload } from "@models/auth.model";
 
 const authRepository: IAuthRepository = new AuthRepository();
