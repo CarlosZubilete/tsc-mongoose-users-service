@@ -8,16 +8,20 @@ import { CreateUserSchema, UpdateUserSchema } from "@schemas/user.schema";
 import { AssignRoles } from "@middlewares/assign-role.middleware";
 import { VerifyPermissions } from "@middlewares/verify-permissions.middleware";
 import { VerifyToken } from "@middlewares/verify-token.middleware";
+import { IRoleRepository, RoleRepository } from "@repositories/role.repository";
+import { IRoleService, RoleService } from "@services/role.service";
 
 // Dependency injection
-const userRepository: IUserRepository = new UserRepository();
-const userService: IUserService = new UserService(userRepository);
-const userController = new UserController(userService);
+const roleRepository: IRoleRepository = new RoleRepository();
+const roleService: IRoleService = new RoleService(roleRepository);
 
+const userRepository: IUserRepository = new UserRepository();
+const userService: IUserService = new UserService(userRepository, roleService);
+
+const userController = new UserController(userService);
 const userRouter: Router = Router();
 
 // todo: add verify-token
-
 userRouter.get(
     "/",
     VerifyToken,

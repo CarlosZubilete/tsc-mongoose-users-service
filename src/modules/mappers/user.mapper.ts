@@ -1,4 +1,4 @@
-import { User, UserResponse } from "@models/user.model";
+import { User, UserResponse, UserUpdate } from "@models/user.model";
 // import { hashPassword } from "@utils/bcrypt";
 
 export class UserMapper {
@@ -18,5 +18,13 @@ export class UserMapper {
         return users
             .map((user) => this.toDTO(user))
             .filter((user) => user !== null); // as UserResponse[];
+    }
+
+    public static updateEntity(entity: User, dto: UserUpdate) {
+        if (dto.name === undefined) dto.name = entity.name;
+
+        if (dto.username === undefined) dto.username = entity.username;
+
+        if (dto.email === undefined) dto.email = entity.email;
     }
 }

@@ -26,6 +26,7 @@ interface UserUpdate {
     username?: string;
     email?: string;
     password?: string;
+    newPassword?: string;
     roles: Role[];
 }
 
@@ -35,7 +36,6 @@ interface UserResponse {
     email: string;
     username: string;
     roles: string[];
-
 }
 
 export { User, UserCreate, UserUpdate, UserResponse };

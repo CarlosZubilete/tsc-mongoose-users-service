@@ -20,7 +20,7 @@ export const VerifyPermissions = async (
 
         // console.log(segment); // PRINT = [ '', 'users-service', 'v1', 'posts', '' ]
 
-        // console.log(`Modulo Name: ${moduleName} | resourceId ${resourceId} `);
+        console.log(`Modulo Name: ${moduleName} | resourceId ${resourceId} `);
 
         console.log("Current Path >> ", moduleName);
         // Built the method_type. It matches with the current HTTP method.
@@ -28,7 +28,7 @@ export const VerifyPermissions = async (
             (p) => p.method === Method[method as keyof typeof Method],
         );
 
-        console.log(`Base method >> ${baseMethod}`);
+        console.log(`Base method permissions >> ${baseMethod?.method}`);
         // Create a copy of the permission object to avoid mutating the global array
         const copyBaseMethod = baseMethod
             ? { ...baseMethod, permissions: [...baseMethod.permissions] }
@@ -44,7 +44,10 @@ export const VerifyPermissions = async (
                 `${moduleName}_${copyBaseMethod.scope}`,
             );
 
-        console.log(`COPY Base method >> ${copyBaseMethod}`);
+        console.log(`COPY Base method  >> ${copyBaseMethod?.method}`);
+
+        console.log(`COPY Base method.scope>> ${copyBaseMethod?.scope}`);
+
         // Merged User's permissions, without repeat.
         const userPermissions = [
             ...new Set(user_logged_roles?.flatMap((x) => x.permissions)),
@@ -61,13 +64,11 @@ export const VerifyPermissions = async (
         if (!matchPermissions)
             throw new UnauthorizedError("User is not Unauthorized");
 
+        req.method_scope = `${moduleName}_${copyBaseMethod?.scope}`;
+
+        console.log(`Current path and scope = ${req.method_scope}`);
         next();
     } catch (error) {
         return next(error);
     }
 };
-
-// const match = fullPath.replace(
-//     new RegExp(`^/${API_NAME}/${API_VERSION}/([^/]+).*/`),
-//     "$1",
-// );

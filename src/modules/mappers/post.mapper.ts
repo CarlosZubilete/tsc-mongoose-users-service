@@ -19,10 +19,10 @@ export class PostMapper {
     }
 
     public static updateEntity(entity: Post, dto: PostUpdate) {
-        if (dto.name == null) dto.name = entity.name;
+        if (dto.name === undefined) dto.name = entity.name;
 
-        if (dto.description == null) dto.description = entity.description;
+        if (dto.description === undefined) dto.description = entity.description;
 
-        if (dto.userId == null) dto.userId = entity.userId;
+        if (dto.userId === undefined) dto.userId = entity.userId;
     }
 }

@@ -31,7 +31,7 @@ class UserRepository implements IUserRepository {
 
     async update(id: string, user: UserUpdate): Promise<User | null> {
         return await UserCollection.findByIdAndUpdate(id, user, {
-            new: true,
+            returnDocument: "after",
         })
             .populate("roles")
             .exec();
@@ -48,8 +48,7 @@ class UserRepository implements IUserRepository {
     }
 
     async existsBy(field: Filter): Promise<boolean> {
-        const exists = await UserCollection.exists(field).exec();
-        return exists ? true : false;
+        return !!(await UserCollection.exists(field).exec());
     }
 }
 

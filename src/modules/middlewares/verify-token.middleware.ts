@@ -12,11 +12,11 @@ import { AuthTokenPayload } from "@models/auth.model";
 const authRepository: IAuthRepository = new AuthRepository();
 const authService: IAuthService = new AuthService(authRepository);
 
-const userRepository = new UserRepository();
-const userService: IUserService = new UserService(userRepository);
-
 const roleRepository: IRoleRepository = new RoleRepository();
 const roleService: IRoleService = new RoleService(roleRepository);
+
+const userRepository = new UserRepository();
+const userService: IUserService = new UserService(userRepository, roleService);
 
 export const VerifyToken = async (
     req: Request,
@@ -60,7 +60,7 @@ export const VerifyToken = async (
                 "User Roles associated with this token no longer exists",
             );
 
-        // Token verified and
+        // Token verified
         req.token_verified = token;
         req.user_logged = user;
         req.user_logged_roles = userRoles;

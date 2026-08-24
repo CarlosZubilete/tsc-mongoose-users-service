@@ -36,14 +36,14 @@ export class PostController {
     public update = async (req: Request, res: Response) => {
         const id = req.params.id as string;
         const updatePost = req.body as PostUpdate;
-        const userRoles = req.user_logged_roles;
-        const userId = req.user_logged.id;
+        const loggedInUserRoles = req.user_logged_roles;
+        const loggedInUserId = req.user_logged.id;
 
         const updated = await this.service.updatePost(
             id,
             updatePost,
-            userRoles,
-            userId,
+            loggedInUserRoles,
+            loggedInUserId,
         );
 
         res.status(200).json(updated);

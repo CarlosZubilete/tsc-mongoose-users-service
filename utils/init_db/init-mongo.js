@@ -44,7 +44,7 @@ db.roles.insertMany([
             "roles_read",
             "users_write",
             "users_read",
-            "users_update",
+            "users_update", // Maybe this functions is only admin 
             "posts_read",
             "posts_write",
             "posts_update",
@@ -55,6 +55,7 @@ db.roles.insertMany([
     {
         name: "user",
         permissions: [
+            "users_update", // Allow users to update their own profile
             "posts_read",
             "posts_write",
             "posts_update",

@@ -14,45 +14,49 @@ export const AssignRoles = async (
     next: NextFunction,
 ) => {
     try {
-        // Extract roles and ensure .
+        // 1. Extract roles and ensure .
         const requestRoles: string[] =
             req.body && req.body?.roles ? req.body.roles : [];
 
-        let isNewRegister = false;
-        let roles: string[] = [];
+        // 2. Identify if this is a public registration (/auth/register)
+        // If method_scope is undefined, no one is logged in, and no specific route scope was hit.
+        const isNewRegister: boolean = req.method_scope === undefined;
 
-        // It is a valid array and does not have any role, defaulting to guest.
-        if (Array.isArray(requestRoles)) {
-            if (requestRoles.length !== 0) roles = requestRoles;
-            else {
-                // This happened when is a new register.
-                isNewRegister = true;
-                roles = ["guest"];
-            }
+        // 3. SCENARIO A: Standard Profile Update (No roles provided)
+        // If they are just updating their name/password, skip this middleware entirely!
+        if (!isNewRegister && requestRoles.length === 0) {
+            return next();
         }
 
-        // Found the role in the database.
-        const existsRoles = await roleService.findRoleByName(roles);
+        // 4. SCENARIO B & C: Public Register OR Admin updating roles
+        let rolesToAssign: string[] = [];
 
-        // IF the lengths don't match, or more roles sent by the user do not exits in the DB.
+        if (isNewRegister) {
+            rolesToAssign = ["guest"]; // Public registers always get forced to guest
+        } else {
+            rolesToAssign = requestRoles; // Admins mapping custom roles
+        }
+
+        // 5. Look up the roles in the database
+        const existsRoles = await roleService.findRoleByName(rolesToAssign);
+
+        console.log(`existsRoles >>> ${existsRoles}`);
+
+        // 6. IF the lengths don't match, or more roles sent by the user do not exits in the DB.
         if (!isNewRegister && existsRoles.length !== requestRoles.length)
             throw new NotFoundError(
                 `One or more provided roles do not exist in the system.`,
             );
 
-        // Check if someone is login in.
+        // 7. Check Privilege Escalation if someone is logged in
         if (req.user_logged) {
-            // list with each levels
             const requesterLevel = req.user_logged_roles.map(
                 (rol) => rol.level,
             );
-            // flat
             let isAllowed = true;
-            // Check every role they are trying to assign
+
             for (const newRole of existsRoles) {
                 for (const level of requesterLevel) {
-                    // console.log("newRole Level >> ", newRole.level);
-                    // console.log("level >> ", level);
                     if (newRole.level >= level) {
                         isAllowed = false;
                     }
@@ -65,9 +69,8 @@ export const AssignRoles = async (
                 );
         }
 
+        // 8. Reassign the body with valid role IDs so the controller can save them
         req.body.roles = existsRoles.map((role) => role.id);
-
-        console.log("Verify roles: >> ", req.body.roles);
 
         next();
     } catch (error) {

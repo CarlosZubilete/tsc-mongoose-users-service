@@ -5,7 +5,6 @@ import { AuthLogin } from "@models/auth.model";
 import { Request, Response } from "express";
 import { IAuthService } from "@services/auth.service";
 import { IUserService } from "@services/user.service";
-import { ConflictError } from "@errors/conflict-error";
 import { UserCreate } from "@models/user.model";
 
 export class AuthController {
@@ -17,25 +16,7 @@ export class AuthController {
         this.userService = userService;
     }
 
-    public register = async (req: Request, res: Response) => {
-        const name = req.body.name as string;
-        if (await this.userService.existsUserByName(name))
-            throw new ConflictError(
-                `User whit this name: ${name} already exits.`,
-            );
-
-        const username = req.body.username as string;
-        if (await this.userService.existsUserByUserName(username))
-            throw new ConflictError(
-                `User whit this username: ${username} already exits.`,
-            );
-
-        const email = req.body.email as string;
-        if (await this.userService.existsUserByEmail(email))
-            throw new ConflictError(
-                `User this whit email: ${email} already exits.`,
-            );
-
+    public register = async (req: Request, res: Response) => {       
         const newUser = req.body as UserCreate;
 
         const created = await this.userService.createUser(newUser);

@@ -7,17 +7,16 @@ import { NotFoundError } from "@errors/not-found-error";
 interface IPostService {
     findPosts(): Promise<PostResponse[]>;
     findPostById(id: string): Promise<PostResponse | null>;
-    // todo: Should I send the userId ?
     createPost(newPost: PostCreate): Promise<PostResponse | null>;
     updatePost(
         id: string,
         partialPost: PostUpdate,
-        userRoles: RoleResponse[],
+        loggedInUserRoles: RoleResponse[],
         loggedInUserId: string,
     ): Promise<PostResponse | null>;
     deletePost(
         id: string,
-        userRoles: RoleResponse[],
+        loggedInUserRoles: RoleResponse[],
         loggedInUserId: string,
     ): Promise<boolean>;
     //
@@ -53,7 +52,7 @@ class PostService implements IPostService {
     async updatePost(
         id: string,
         partialPost: PostUpdate,
-        userRoles: RoleResponse[],
+        loggedInUserRoles: RoleResponse[],
         loggedInUserId: string,
     ): Promise<PostResponse | null> {
         // Check is the post with if exists.
@@ -62,7 +61,9 @@ class PostService implements IPostService {
             throw new NotFoundError(`Post with this id ${id} not found.`);
 
         // Check if the standard user
-        const isStandardUser = userRoles.some(({ name }) => name === "user");
+        const isStandardUser = loggedInUserRoles.some(
+            (rol) => rol.name === "user",
+        );
         // Enforce ownership
         if (isStandardUser) {
             const existingPostWithUser = await this.repository.existsBy({
@@ -85,17 +86,19 @@ class PostService implements IPostService {
 
     async deletePost(
         id: string,
-        userRoles: RoleResponse[],
+        loggedInUserRoles: RoleResponse[],
         loggedInUserId: string,
     ): Promise<boolean> {
         // Check is the post with if exists.
         const existingPost = await this.repository.existsBy({ _id: id });
-        
+
         if (!existingPost)
             throw new NotFoundError(`Post with this id ${id} not found.`);
 
         // Check if the standard user
-        const isStandardUser = userRoles.some(({ name }) => name === "user");
+        const isStandardUser = loggedInUserRoles.some(
+            (role) => role.name === "user",
+        );
         // Enforce ownership
         if (isStandardUser) {
             const existingPostWithUser = await this.repository.existsBy({
