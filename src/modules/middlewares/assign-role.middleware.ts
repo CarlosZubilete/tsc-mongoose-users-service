@@ -38,9 +38,9 @@ export const AssignRoles = async (
         }
 
         // 5. Look up the roles in the database
-        const existsRoles = await roleService.findRoleByName(rolesToAssign);
+        const existsRoles = await roleService.findRolesByName(rolesToAssign);
 
-        console.log(`existsRoles >>> ${existsRoles}`);
+        // console.log(`existsRoles >>> ${existsRoles}`);
 
         // 6. IF the lengths don't match, or more roles sent by the user do not exits in the DB.
         if (!isNewRegister && existsRoles.length !== requestRoles.length)
@@ -53,6 +53,7 @@ export const AssignRoles = async (
             const requesterLevel = req.user_logged_roles.map(
                 (rol) => rol.level,
             );
+            
             let isAllowed = true;
 
             for (const newRole of existsRoles) {

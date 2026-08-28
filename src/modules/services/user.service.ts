@@ -1,5 +1,5 @@
 import { AuthLogin } from "@models/auth.model";
-import { UserResponse, UserCreate, UserUpdate } from "@models/user.model";
+import { UserResponse, UserCreate, UserUpdate, User } from "@models/user.model";
 import { IUserRepository } from "@repositories/user.repository";
 import { comparePassword, hashPassword } from "@utils/bcrypt";
 import { UserMapper } from "@mappers/user.mapper";
@@ -19,25 +19,14 @@ interface IUserService {
         loggedInUserRoles: RoleResponse[],
         loggedInUserId: string,
     ): Promise<UserResponse | null>;
-    deleteUser(id: string): Promise<boolean>;
-    //
-
-    // changePassword(
-    //     id: string,
-    //     password?: string,
-    //     newPassword: string,
-    //     loggedInUserRoles: RoleResponse[],
-    //     loggedInUserId: string,
-    // ): Promise<UserResponse | null>;
-
-    isValidUser(authLogin: AuthLogin): Promise<boolean>;
+    deleteUser(
+        id: string,
+        loggedInUserRoles: RoleResponse[],
+        loggedInUserId: string,
+    ): Promise<boolean>;
+    isValidCredentials(authLogin: AuthLogin): Promise<boolean>;
     // return an object
     findUserByEmail(email: string): Promise<UserResponse | null>;
-    // return a boolean
-    existsUserById(id: string): Promise<boolean>;
-    existsUserByName(name: string): Promise<boolean>;
-    existsUserByUserName(username: string): Promise<boolean>;
-    existsUserByEmail(email: string): Promise<boolean>;
 }
 
 class UserService implements IUserService {
@@ -113,41 +102,17 @@ class UserService implements IUserService {
                 );
         }
 
-        /*
-            If the its own profile , it can make changes.
-            If not, we're looking their permission and comparing the level
-        */
+        // If the its own profile , it can make changes.
+        // If not, we're looking their permission and comparing the level
+
         let canMakeChanges = false;
 
         // It's owner of the profile. (User - Manager - Admin , etc)
         if (existingUser.id === loggedInUserId) {
             canMakeChanges = true;
         } else {
-            // Extract the names roles of user form database
-            const nameRolesByExistingUser = existingUser.roles.map(
-                (role) => role.name,
-            );
-            // Get the roles list from existing user from the database
-            const rolesByExistingUser = await this.roleService.findRoleByName(
-                nameRolesByExistingUser,
-            );
-
-            //  Safely find the maximum levels using Math.max
-            // If the array is empty, we default to 0 so it doesn't crash.
-            const maxExistingUserLevel =
-                rolesByExistingUser.length > 0
-                    ? Math.max(...rolesByExistingUser.map((r) => r.level))
-                    : 0;
-
-            const maxLoggedInLevel =
-                loggedInUserRoles.length > 0
-                    ? Math.max(...loggedInUserRoles.map((r) => r.level))
-                    : 0;
-
-            console.log(`maxExistingLevel >> ${maxExistingUserLevel}`);
-            console.log(`maxLoggedInLevel >> ${maxLoggedInLevel}`);
-
-            if (maxLoggedInLevel > maxExistingUserLevel) canMakeChanges = true;
+            if (await this.hasEnoughLevel(existingUser, loggedInUserRoles))
+                canMakeChanges = true;
         }
 
         // Throw the exception
@@ -157,6 +122,7 @@ class UserService implements IUserService {
             );
 
         // If wants to update the password: [USER - MANAGER - ADMIN]
+        // todo: move a special endpoint.
         if (dto.newPassword) {
             // Who is changing the password ?
             // SCENARIO B: The user is updating their OWN password
@@ -173,7 +139,7 @@ class UserService implements IUserService {
                     existingUser.password,
                 );
 
-                console.log(`Match password >> ${matchPassword}`);
+                // console.log(`Match password >> ${matchPassword}`);
 
                 if (!matchPassword)
                     throw new ForbiddenError(
@@ -231,14 +197,38 @@ class UserService implements IUserService {
         return user ? UserMapper.toDTO(user) : null;
     }
 
-    async deleteUser(id: string): Promise<boolean> {
+    async deleteUser(
+        id: string,
+        loggedInUserRoles: RoleResponse[],
+        loggedInUserId: string,
+    ): Promise<boolean> {
+        const existingUser = await this.repository.findById(id);
+
+        if (!existingUser)
+            throw new NotFoundError(`User with id: ${id} not found. `);
+
+        // Prevent self deleted
+        if (existingUser.id === loggedInUserId)
+            throw new ForbiddenError(
+                `You cannot delete yourself. Please contact the administration.`,
+            );
+
+        // Permission level
+        const canDelete = await this.hasEnoughLevel(
+            existingUser,
+            loggedInUserRoles,
+        );
+
+        if (!canDelete)
+            throw new ForbiddenError(
+                `Privilege Escalation Blocked: You don't have enough permissions to delete this user.`,
+            );
+
         return this.repository.delete(id);
     }
 
-    // Patch -> Change password
-
     // Custom queries
-    async isValidUser(authLogin: AuthLogin): Promise<boolean> {
+    async isValidCredentials(authLogin: AuthLogin): Promise<boolean> {
         const existingUser = await this.repository.findBy({
             email: authLogin.email,
         });
@@ -260,20 +250,37 @@ class UserService implements IUserService {
         return existsUser ? UserMapper.toDTO(existsUser) : null;
     }
 
-    async existsUserById(id: string): Promise<boolean> {
-        return this.repository.existsBy({ _id: id });
-    }
+    private async hasEnoughLevel(
+        existingUser: User,
+        loggedInUserRoles: RoleResponse[],
+    ): Promise<boolean> {
+        let canMakeChanges = false;
 
-    async existsUserByName(name: string): Promise<boolean> {
-        return this.repository.existsBy({ name: name });
-    }
+        // Extract the names roles of user form database
+        const nameRolesByExistingUser = existingUser.roles.map(
+            (role) => role.name,
+        );
 
-    async existsUserByUserName(username: string): Promise<boolean> {
-        return this.repository.existsBy({ username: username });
-    }
+        // Get the roles list from existing user from the database
+        const rolesByExistingUser = await this.roleService.findRolesByName(
+            nameRolesByExistingUser,
+        );
 
-    async existsUserByEmail(email: string): Promise<boolean> {
-        return this.repository.existsBy({ email: email });
+        //  Safely find the maximum levels using Math.max
+        // If the array is empty, we default to 0 so it doesn't crash.
+        const maxExistingUserLevel =
+            rolesByExistingUser.length > 0
+                ? Math.max(...rolesByExistingUser.map((r) => r.level))
+                : 0;
+
+        const maxLoggedInLevel =
+            loggedInUserRoles.length > 0
+                ? Math.max(...loggedInUserRoles.map((r) => r.level))
+                : 0;
+
+        if (maxLoggedInLevel > maxExistingUserLevel) canMakeChanges = true;
+
+        return canMakeChanges;
     }
 }
 

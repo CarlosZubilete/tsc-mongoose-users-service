@@ -9,14 +9,14 @@ import { IRoleRepository, RoleRepository } from "@repositories/role.repository";
 import { IRoleService, RoleService } from "@services/role.service";
 import { AuthTokenPayload } from "@models/auth.model";
 
-const authRepository: IAuthRepository = new AuthRepository();
-const authService: IAuthService = new AuthService(authRepository);
-
 const roleRepository: IRoleRepository = new RoleRepository();
 const roleService: IRoleService = new RoleService(roleRepository);
 
 const userRepository = new UserRepository();
 const userService: IUserService = new UserService(userRepository, roleService);
+
+const authRepository: IAuthRepository = new AuthRepository();
+const authService: IAuthService = new AuthService(authRepository, userService);
 
 export const VerifyToken = async (
     req: Request,
@@ -51,7 +51,7 @@ export const VerifyToken = async (
             );
 
         // 3. Find the User's roles.
-        const userRoles = await roleService.findRoleByName(
+        const userRoles = await roleService.findRolesByName(
             payloadVerified.roles,
         );
 

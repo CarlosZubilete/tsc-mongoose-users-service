@@ -1,5 +1,3 @@
-import { ConflictError } from "@errors/conflict-error";
-import { NotFoundError } from "@errors/not-found-error";
 import { RoleCreate, RoleUpdate } from "@models/role.model";
 import { Request, Response } from "express";
 import { IRoleService } from "@services/role.service";
@@ -21,46 +19,26 @@ export class RoleController {
 
         const role = await this.service.findRoleById(id);
 
-        if (!role)
-            throw new NotFoundError(`Role with this id: ${id} not found.`);
-
         res.status(200).json(role);
     };
 
     public create = async (req: Request, res: Response) => {
-        const name = req.body.name as string;
-        if (await this.service.existsRoleByName(name))
-            throw new ConflictError(
-                `Role with this name: ${name} already exists.`,
-            );
-
-        // Verify the permissions are not repeat
+        // Set the permissions because they are not repeat
         const permissions = req.body.permissions as string[];
         const unique_permissions = [...new Set(permissions)];
+
         req.body.permissions = unique_permissions;
 
         const role = req.body as RoleCreate;
         const created = await this.service.createRole(role);
-
 
         res.status(201).json(created);
     };
 
     public update = async (req: Request, res: Response) => {
         const id = req.params.id as string;
-        const exists = await this.service.existsRoleById(id);
-        if (!exists)
-            throw new NotFoundError(`Role whit this id: ${id} not found.`);
 
-        if (req.body.name != null) {
-            const name = req.body.name as string;
-            if (await this.service.existsRoleByName(name))
-                throw new ConflictError(
-                    `Role with this name: ${name} already exists.`,
-                );
-        }
-
-        if (req.body.permissions != null) {
+        if (req.body.permissions) {
             const permissions = req.body.permissions as string[];
             const unique_permissions = [...new Set(permissions)];
             req.body.permissions = unique_permissions;
@@ -76,10 +54,7 @@ export class RoleController {
     public delete = async (req: Request, res: Response) => {
         const id = req.params.id as string;
 
-        const deleted = await this.service.deleteRole(id);
-
-        if (!deleted)
-            throw new NotFoundError(`Role whit this id: ${id} not found.`);
+        await this.service.deleteRole(id);
 
         res.status(204).end();
     };

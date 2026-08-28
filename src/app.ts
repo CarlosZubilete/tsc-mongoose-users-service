@@ -1,3 +1,5 @@
+import "module-alias/register"; // 
+
 import app from "@sources/server";
 import dotenv from "dotenv";
 import "@config/connection"; // Initialize MongoDB connection
@@ -8,5 +10,5 @@ dotenv.config();
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });

@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { IUserService } from "@services/user.service";
 import { UserCreate, UserUpdate } from "@models/user.model";
-import { NotFoundError } from "@errors/not-found-error";
 
 export class UserController {
     private service: IUserService;
@@ -48,10 +47,10 @@ export class UserController {
 
     public deleteById = async (req: Request, res: Response) => {
         const id = req.params.id as string;
+        const loggedInUserRoles = req.user_logged_roles;
+        const loggedInUserId = req.user_logged.id;
 
-        const deleted = await this.service.deleteUser(id);
-
-        if (!deleted) throw new NotFoundError(`User with id: ${id} not found.`);
+        await this.service.deleteUser(id, loggedInUserRoles, loggedInUserId);
 
         res.status(204).end();
     };

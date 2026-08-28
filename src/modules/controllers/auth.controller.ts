@@ -16,7 +16,7 @@ export class AuthController {
         this.userService = userService;
     }
 
-    public register = async (req: Request, res: Response) => {       
+    public register = async (req: Request, res: Response) => {
         const newUser = req.body as UserCreate;
 
         const created = await this.userService.createUser(newUser);
@@ -27,29 +27,16 @@ export class AuthController {
     public login = async (req: Request, res: Response) => {
         // Valid Data...
         const authLogin = req.body as AuthLogin;
-        const result = await this.userService.isValidUser(authLogin);
-        if (!result)
-            throw new BadRequestError(`Email or password are not corrects.`);
 
-        const existingUser = await this.userService.findUserByEmail(
-            authLogin.email,
-        );
-
-        if (!existingUser)
-            throw new NotFoundError(
-                `User with this email: ${authLogin.email} not found.`,
-            );
-
-        const newAuth = await this.service.login(existingUser);
+        const newAuth = await this.service.login(authLogin);
         // create the auth
         res.status(201).json(newAuth);
     };
 
     public logout = async (req: Request, res: Response) => {
-        const isLogout = await this.service.logout(req.token_verified);
+        const token = req.token_verified as string;
 
-        if (!isLogout)
-            throw new InternalServerError("An unexpected error on the server");
+        await this.service.logout(token);
 
         res.status(201).json({ message: "Logout successfully" });
     };
